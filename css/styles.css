@@ -1,8 +1,11 @@
 /* Chef by Birth – Shared Styles */
 .hero-overlay {
-  background: linear-gradient(135deg, rgba(45,106,79,.88) 0%, rgba(217,122,43,.72) 45%, rgba(27,67,50,.92) 100%);
+  background:
+    radial-gradient(ellipse 90% 80% at 70% 40%, rgba(217, 122, 43, 0.55) 0%, transparent 55%),
+    linear-gradient(135deg, rgba(27, 67, 50, 0.92) 0%, rgba(45, 106, 79, 0.78) 40%, rgba(217, 122, 43, 0.65) 100%);
   animation: gradientShift 12s ease-in-out infinite alternate;
 }
+.hero-bg-image { object-position: center 45%; }
 .text-shadow { text-shadow: 0 2px 12px rgba(0,0,0,.35); }
 #site-header.scrolled { background: rgba(27,67,50,.98); box-shadow: 0 8px 32px rgba(0,0,0,.18); }
 #site-header.scrolled .header-inner { height: 3.5rem; }
