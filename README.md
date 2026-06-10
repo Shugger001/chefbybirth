@@ -10,7 +10,8 @@ Chefbybirth/
 ├── admin.html              # Password-protected admin dashboard
 ├── config.js               # Supabase & business config (edit this!)
 ├── schema.sql              # Database tables, RLS, seeds
-├── netlify.toml            # Netlify deploy config
+├── vercel.json             # Vercel deploy config
+├── netlify.toml            # Netlify deploy config (optional)
 ├── README.md               # This file
 └── supabase/functions/
     ├── order-notification/ # WhatsApp/SMS on new order
@@ -107,14 +108,20 @@ supabase functions deploy update-menu-status --no-verify-jwt
 
 ## Step 6: Deploy Frontend
 
-### Netlify (recommended)
+### Vercel (recommended)
 
-1. Drag the project folder to [app.netlify.com/drop](https://app.netlify.com/drop)
-2. Admin dashboard: `https://your-site.netlify.app/admin`
+1. Go to [vercel.com/new](https://vercel.com/new) and import **Shugger001/chefbybirth**
+2. Use these settings:
+   - **Framework Preset:** Other
+   - **Build Command:** *(leave empty)*
+   - **Output Directory:** `.` *(root)*
+3. Click **Deploy**
+4. Your site will be at `https://your-project.vercel.app`
+5. Admin dashboard: `https://your-project.vercel.app/admin`
 
-### Vercel / GitHub Pages
+Every `git push` to `main` triggers an automatic redeploy on Vercel.
 
-Upload all files. Ensure `config.js` is served at the root.
+### Netlify
 
 ### Local testing
 
