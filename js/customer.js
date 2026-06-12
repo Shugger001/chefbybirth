@@ -99,7 +99,7 @@
       grouped[cat].forEach((item, i) => {
         const featured = item.name.includes('Classic Kenkey') ? ' featured' : '';
         const inCart = cart.find((c) => c.id === item.id);
-        html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal revealed" data-id="${item.id}">
+        html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal menu-pop" style="animation-delay:${i * 0.07}s" data-id="${item.id}">
           ${item.image_url ? `<img src="${esc(item.image_url)}" alt="" class="w-full h-36 object-cover rounded-xl mb-4" loading="lazy">` : ''}
           <div class="flex justify-between items-start gap-3 mb-2">
             <h4 class="font-display text-lg font-bold text-secondary">${esc(item.name)}</h4>
@@ -120,6 +120,7 @@
 
     container.innerHTML = html || '<p class="text-center text-gray-500 py-12">No items available right now. Check back soon!</p>';
     bindAddToCartButtons();
+    observeRevealElements(container.querySelectorAll('.reveal'));
   }
 
   function bindAddToCartButtons() {
@@ -141,9 +142,19 @@
     const existing = cart.find((c) => c.id === itemId);
     if (existing) existing.quantity += qty;
     else cart.push({ id: item.id, name: item.name, price: Number(item.price), quantity: qty, category: item.category });
-    updateCartUI();
+    updateCartUI(true);
     showToast(`${item.name} added to cart`, 'success');
+    openCart();
+  }
+
+  function openCart() {
     document.getElementById('cart-panel')?.classList.remove('translate-x-full');
+    document.getElementById('cart-backdrop')?.classList.add('open');
+  }
+
+  function closeCart() {
+    document.getElementById('cart-panel')?.classList.add('translate-x-full');
+    document.getElementById('cart-backdrop')?.classList.remove('open');
   }
 
   function removeFromCart(itemId) {
@@ -186,7 +197,9 @@
     return count;
   }
 
-  function updateCartUI() {
+  let lastCartTotal = 0;
+
+  function updateCartUI(bumpBadge) {
     const countEl = document.getElementById('cart-count');
     const itemsEl = document.getElementById('cart-items');
     const subtotalEl = document.getElementById('cart-subtotal');
@@ -195,14 +208,19 @@
     if (countEl) {
       countEl.textContent = totalItems;
       countEl.classList.toggle('hidden', totalItems === 0);
+      if (bumpBadge && totalItems > 0) {
+        countEl.classList.remove('cart-bump');
+        void countEl.offsetWidth;
+        countEl.classList.add('cart-bump');
+      }
     }
 
     if (itemsEl) {
       if (!cart.length) {
         itemsEl.innerHTML = '<p class="text-gray-500 text-center py-8 text-sm">Your cart is empty</p>';
       } else {
-        itemsEl.innerHTML = cart.map((c) => `
-          <div class="flex items-center gap-3 py-3 border-b border-gray-100">
+        itemsEl.innerHTML = cart.map((c, i) => `
+          <div class="cart-item-enter flex items-center gap-3 py-3 border-b border-gray-100" style="animation-delay:${i * 0.05}s">
             <div class="flex-1 min-w-0">
               <p class="font-medium text-sm text-secondary truncate">${esc(c.name)}</p>
               <p class="text-primary text-sm font-semibold">$${(c.price * c.quantity).toFixed(2)}</p>
@@ -236,7 +254,16 @@
     const fee = getDeliveryFee(orderType);
     if (deliveryRow) deliveryRow.classList.toggle('hidden', orderType !== 'delivery');
     if (deliveryEl) deliveryEl.textContent = fee === 0 ? 'FREE' : '$' + fee.toFixed(2);
-    if (totalEl) totalEl.textContent = '$' + getTotal(orderType).toFixed(2);
+    const newTotal = getTotal(orderType);
+    if (totalEl) {
+      totalEl.textContent = '$' + newTotal.toFixed(2);
+      if (newTotal !== lastCartTotal && lastCartTotal !== 0) {
+        totalEl.classList.remove('order-total-bump');
+        void totalEl.offsetWidth;
+        totalEl.classList.add('order-total-bump');
+      }
+      lastCartTotal = newTotal;
+    }
 
     // Kenkey warning
     const kenkeyCount = countKenkeyPieces();
@@ -284,15 +311,15 @@
     const day = hours[dayKey];
 
     if (day?.closed) {
-      statusEl.className = 'inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-red-50 text-red-700 text-sm font-semibold';
+      statusEl.className = 'inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-red-50 text-red-700 text-sm font-semibold';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-400';
       if (textEl) textEl.textContent = 'Closed today — fermenting kenkey 🌽';
     } else if (check.ok) {
-      statusEl.className = 'inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-green-50 text-green-800 text-sm font-semibold';
+      statusEl.className = 'inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-green-50 text-green-800 text-sm font-semibold status-open';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse';
       if (textEl) textEl.textContent = 'Open now — order pickup or delivery!';
     } else {
-      statusEl.className = 'inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold';
+      statusEl.className = 'inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold';
       if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-gray-400';
       if (textEl) textEl.textContent = day ? `Opens at ${fmtTime(day.open)}` : 'Check hours below';
     }
@@ -414,6 +441,9 @@
     waBtn.href = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
 
     panel.classList.remove('hidden');
+    panel.classList.remove('success-pop');
+    void panel.offsetWidth;
+    panel.classList.add('success-pop');
     panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
@@ -531,26 +561,101 @@
 
   function initCartToggle() {
     document.getElementById('cart-toggle')?.addEventListener('click', () => {
-      document.getElementById('cart-panel')?.classList.toggle('translate-x-full');
+      const panel = document.getElementById('cart-panel');
+      if (panel?.classList.contains('translate-x-full')) openCart();
+      else closeCart();
     });
-    document.getElementById('cart-close')?.addEventListener('click', () => {
-      document.getElementById('cart-panel')?.classList.add('translate-x-full');
+    document.getElementById('cart-close')?.addEventListener('click', closeCart);
+    document.getElementById('cart-backdrop')?.addEventListener('click', closeCart);
+    document.getElementById('cart-checkout-btn')?.addEventListener('click', closeCart);
+  }
+
+  // ─── Scroll reveal & parallax ────────────────────────────────────
+  let revealObserver = null;
+
+  function observeRevealElements(elements) {
+    if (!revealObserver) return;
+    elements.forEach((el) => {
+      if (!el.classList.contains('revealed')) revealObserver.observe(el);
+    });
+  }
+
+  function initRevealObserver() {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+    observeRevealElements(document.querySelectorAll('.reveal'));
+
+    const howSection = document.getElementById('how-it-works');
+    if (howSection) {
+      const stepsObs = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          document.getElementById('steps-fill')?.classList.add('animate');
+          stepsObs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      stepsObs.observe(howSection);
+    }
+  }
+
+  function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        const id = anchor.getAttribute('href');
+        if (!id || id === '#') return;
+        const target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+        const headerH = document.getElementById('site-header')?.offsetHeight || 80;
+        window.scrollTo({ top: target.offsetTop - headerH - 8, behavior: 'smooth' });
+      });
     });
   }
 
   function initScrollEffects() {
     const header = document.getElementById('site-header');
     const floatBtn = document.getElementById('floating-order-btn');
+    const heroImg = document.querySelector('.hero-bg-image');
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+    const sections = ['about', 'menu', 'how-it-works', 'hours', 'order', 'contact'];
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let floatPulseDone = false;
+
     window.addEventListener('scroll', () => {
-      header?.classList.toggle('scrolled', window.scrollY > 60);
+      const scrollY = window.scrollY;
+      header?.classList.toggle('scrolled', scrollY > 60);
+
       const hero = document.getElementById('hero');
       if (floatBtn && hero) {
-        floatBtn.classList.toggle('hidden-scroll', window.scrollY < hero.offsetHeight - 100);
+        const show = scrollY > hero.offsetHeight - 120;
+        floatBtn.classList.toggle('hidden-scroll', !show);
+        if (show && !floatPulseDone) {
+          floatBtn.classList.add('pulse-once');
+          floatPulseDone = true;
+        }
       }
+
+      if (heroImg && hero && !prefersReduced && scrollY < hero.offsetHeight) {
+        heroImg.style.transform = `scale(1.1) translateY(${scrollY * 0.32}px)`;
+      }
+
+      const scrollPos = scrollY + (header?.offsetHeight || 80) + 100;
+      let current = '';
+      sections.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop <= scrollPos) current = id;
+      });
+      navLinks.forEach((link) => link.classList.toggle('active', link.dataset.section === current));
     }, { passive: true });
 
     document.querySelectorAll('.hero-enter').forEach((el, i) => {
-      setTimeout(() => el.classList.add('loaded'), 100 + i * 120);
+      setTimeout(() => el.classList.add('loaded'), 80 + i * 100);
     });
   }
 
@@ -559,6 +664,8 @@
     initMobileMenu();
     initCartToggle();
     initMenuFilters();
+    initRevealObserver();
+    initSmoothScroll();
     initScrollEffects();
     toggleDeliveryFields();
 

@@ -47,15 +47,15 @@
           <span class="font-display font-bold text-white text-lg sm:text-xl">Chef by Birth</span>
         </a>
         <ul class="hidden md:flex items-center gap-6" role="list">
-          <li><a href="#about" class="nav-link text-white/90 text-sm font-medium">Our Story</a></li>
-          <li><a href="#menu" class="nav-link text-white/90 text-sm font-medium">Menu</a></li>
-          <li><a href="#order" class="nav-link text-white/90 text-sm font-medium">Order</a></li>
-          <li><a href="#hours" class="nav-link text-white/90 text-sm font-medium">Hours</a></li>
-          <li><a href="#contact" class="nav-link text-white/90 text-sm font-medium">Contact</a></li>
+          <li><a href="#about" class="nav-link text-white/90 text-sm font-medium" data-section="about">Our Story</a></li>
+          <li><a href="#menu" class="nav-link text-white/90 text-sm font-medium" data-section="menu">Menu</a></li>
+          <li><a href="#order" class="nav-link text-white/90 text-sm font-medium" data-section="order">Order</a></li>
+          <li><a href="#hours" class="nav-link text-white/90 text-sm font-medium" data-section="hours">Hours</a></li>
+          <li><a href="#contact" class="nav-link text-white/90 text-sm font-medium" data-section="contact">Contact</a></li>
         </ul>
         <div class="flex items-center gap-3">
-          <button type="button" id="cart-toggle" class="relative text-white hover:text-accent transition-colors p-2" aria-label="Open cart">
-            <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <button type="button" id="cart-toggle" class="relative text-white hover:text-accent transition-colors p-2 group" aria-label="Open cart">
+            <i class="fa-solid fa-cart-shopping text-xl group-hover:scale-110 transition-transform"></i>
             <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-accent text-secondary-dark text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
           </button>
           <button id="mobile-menu-btn" type="button" class="md:hidden text-white p-2" aria-label="Menu"><i class="fa-solid fa-bars text-xl"></i></button>
@@ -83,6 +83,9 @@
       <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-truck mr-2"></i>Free delivery on orders over $40</span>
     </div>
   </div>
+
+  <!-- Cart backdrop -->
+  <div id="cart-backdrop" class="fixed inset-0 bg-black/40 z-[70] backdrop-blur-sm" aria-hidden="true"></div>
 
   <!-- Cart sidebar -->
   <aside id="cart-panel" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-2xl z-[80] transform translate-x-full transition-transform duration-300 flex flex-col" aria-label="Shopping cart">
@@ -116,9 +119,13 @@
           fetchpriority="high"
         >
         <div class="hero-overlay absolute inset-0"></div>
+        <div class="hero-particle w-3 h-3 top-[18%] left-[12%]" style="animation-delay:0s" aria-hidden="true"></div>
+        <div class="hero-particle w-2 h-2 top-[55%] left-[82%]" style="animation-delay:1.2s" aria-hidden="true"></div>
+        <div class="hero-particle w-4 h-4 top-[30%] left-[68%]" style="animation-delay:2.5s" aria-hidden="true"></div>
+        <div class="hero-particle w-2 h-2 top-[72%] left-[22%]" style="animation-delay:3.8s" aria-hidden="true"></div>
       </div>
       <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white py-20">
-        <p class="hero-enter text-accent font-semibold tracking-widest uppercase text-sm mb-4"><i class="fa-solid fa-star mr-1"></i> Pennsylvania's Finest Ghanaian Kitchen</p>
+        <p class="hero-enter text-accent font-semibold tracking-widest uppercase text-sm mb-4"><i class="fa-solid fa-star mr-1 animate-pulse"></i> Pennsylvania's Finest Ghanaian Kitchen</p>
         <h1 class="hero-enter delay-1 font-display font-bold text-4xl sm:text-5xl md:text-6xl leading-tight mb-6 text-shadow">Chef by Birth – Authentic Ghanaian Kenkey in Pennsylvania</h1>
         <p class="hero-enter delay-2 text-lg sm:text-xl text-white/95 max-w-2xl mx-auto mb-10">Fermented for 3 days. Wrapped in leaves. Served with fried fish and homemade shito. Taste the tradition.</p>
         <div class="hero-enter delay-3 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -130,20 +137,43 @@
           <p>Kenkey requires 3 days fermentation. For orders of 10+ pieces, please order 24 hours in advance.</p>
         </div>
       </div>
+      <a href="#about" class="scroll-chevron absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 hover:text-accent transition-colors z-10" aria-label="Scroll down">
+        <i class="fa-solid fa-chevron-down text-2xl"></i>
+      </a>
     </section>
 
     <!-- About -->
     <section id="about" class="py-20 md:py-28 bg-white">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
-          <div>
+          <div class="reveal reveal-left">
             <span class="text-primary font-semibold uppercase text-sm tracking-wider">Our Story</span>
             <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mt-3 mb-6">Food Made by Instinct, Memory &amp; Birth</h2>
             <p class="text-gray-600 text-lg leading-relaxed mb-4">At Chef by Birth, we don't just cook – we carry generations of flavor. Every ball of kenkey is fermented for three days using traditional Ghanaian methods passed down through family.</p>
-            <p class="text-gray-600 text-lg leading-relaxed">Served with crispy fried fish, our signature shito, and fresh vegetables. From our kitchen in Pennsylvania to your table.</p>
+            <p class="text-gray-600 text-lg leading-relaxed mb-8">Served with crispy fried fish, our signature shito, and fresh vegetables. From our kitchen in Pennsylvania to your table.</p>
+            <div class="flex flex-wrap gap-6">
+              <div class="flex items-center gap-3 reveal stagger-1">
+                <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center text-primary"><i class="fa-solid fa-clock"></i></div>
+                <div><p class="font-semibold text-secondary">3-Day Fermentation</p><p class="text-xs text-gray-500">Traditional method</p></div>
+              </div>
+              <div class="flex items-center gap-3 reveal stagger-2">
+                <div class="w-11 h-11 rounded-full bg-secondary/10 flex items-center justify-center text-secondary"><i class="fa-solid fa-leaf"></i></div>
+                <div><p class="font-semibold text-secondary">Leaf Wrapped</p><p class="text-xs text-gray-500">Corn husks &amp; plantain</p></div>
+              </div>
+              <div class="flex items-center gap-3 reveal stagger-3">
+                <div class="w-11 h-11 rounded-full bg-accent/20 flex items-center justify-center text-primary"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                <div><p class="font-semibold text-secondary">Homemade Shito</p><p class="text-xs text-gray-500">Family recipe</p></div>
+              </div>
+            </div>
           </div>
-          <div class="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-            <img src="assets/hero-kenkey.png" alt="Traditional Ghanaian kenkey wrapped in corn husks" class="w-full h-full object-cover object-center" loading="lazy">
+          <div class="reveal reveal-right relative">
+            <div class="about-image-wrap aspect-[4/5] shadow-2xl">
+              <img src="assets/hero-kenkey.png" alt="Traditional Ghanaian kenkey wrapped in corn husks" class="w-full h-full object-cover object-center" loading="lazy">
+            </div>
+            <div class="about-badge absolute -bottom-5 -left-5 bg-primary text-white p-5 rounded-2xl shadow-xl hidden sm:block" aria-hidden="true">
+              <p class="font-display text-3xl font-bold leading-none">3</p>
+              <p class="text-xs font-medium mt-1">Days of<br>Fermentation</p>
+            </div>
           </div>
         </div>
       </div>
@@ -152,12 +182,12 @@
     <!-- Menu (loaded from Supabase) -->
     <section id="menu" class="py-20 md:py-28 bg-cream">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="text-center mb-10">
+        <div class="text-center mb-10 reveal">
           <span class="text-primary font-semibold uppercase text-sm tracking-wider">What We Serve</span>
           <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mt-3 mb-4">Our Menu</h2>
           <p class="text-gray-600">Live menu — updates instantly when items sell out</p>
         </div>
-        <div class="flex flex-wrap justify-center gap-2 mb-10" role="tablist">
+        <div class="flex flex-wrap justify-center gap-2 mb-10 reveal" role="tablist">
           <button type="button" class="menu-filter-btn active px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="all">All</button>
           <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="main">Main Plates</button>
           <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="side">Extra Sides</button>
@@ -172,32 +202,35 @@
     </section>
 
     <!-- How it works -->
-    <section id="how-it-works" class="py-20 bg-secondary text-white">
+    <section id="how-it-works" class="py-20 bg-secondary text-white overflow-hidden">
       <div class="max-w-6xl mx-auto px-4 text-center">
-        <h2 class="font-display font-bold text-3xl sm:text-4xl mb-12">How It Works</h2>
-        <ol class="grid md:grid-cols-3 gap-8">
-          <li><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">1</div><h3 class="font-bold text-lg mb-2">Add to Cart &amp; Checkout</h3><p class="text-white/80 text-sm">Select items, choose pickup or delivery, and submit your order online.</p></li>
-          <li><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">2</div><h3 class="font-bold text-lg mb-2">We Prepare Fresh</h3><p class="text-white/80 text-sm">24-hour notice required for orders over 10 kenkey pieces.</p></li>
-          <li><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">3</div><h3 class="font-bold text-lg mb-2">Pick Up or Delivery</h3><p class="text-white/80 text-sm">Within 20 miles. $5 delivery fee or free over $40.</p></li>
-        </ol>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl mb-12 reveal">How It Works</h2>
+        <div class="relative">
+          <div class="steps-connector" aria-hidden="true"><div class="steps-connector-fill" id="steps-fill"></div></div>
+          <ol class="grid md:grid-cols-3 gap-8 relative">
+            <li class="step-item reveal stagger-1"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">1</div><h3 class="font-bold text-lg mb-2">Add to Cart &amp; Checkout</h3><p class="text-white/80 text-sm">Select items, choose pickup or delivery, and submit your order online.</p></li>
+            <li class="step-item reveal stagger-2"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">2</div><h3 class="font-bold text-lg mb-2">We Prepare Fresh</h3><p class="text-white/80 text-sm">24-hour notice required for orders over 10 kenkey pieces.</p></li>
+            <li class="step-item reveal stagger-3"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">3</div><h3 class="font-bold text-lg mb-2">Pick Up or Delivery</h3><p class="text-white/80 text-sm">Within 20 miles. $5 delivery fee or free over $40.</p></li>
+          </ol>
+        </div>
       </div>
     </section>
 
     <!-- Hours -->
     <section id="hours" class="py-20 md:py-28 bg-white">
       <div class="max-w-4xl mx-auto px-4 text-center">
-        <h2 class="font-display font-bold text-3xl text-secondary mb-4">Hours &amp; Location</h2>
+        <h2 class="font-display font-bold text-3xl text-secondary mb-4 reveal">Hours &amp; Location</h2>
         <div id="live-status" class="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-gray-100 text-sm font-semibold" role="status">
           <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
           <span id="status-text">Checking hours…</span>
         </div>
         <div class="grid sm:grid-cols-2 gap-6 text-left">
-          <div class="bg-cream rounded-2xl p-6 shadow-md">
+          <div class="reveal reveal-left bg-cream rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow">
             <h3 class="font-display font-bold text-secondary mb-3"><i class="fa-solid fa-location-dot text-primary mr-2"></i>Pickup</h3>
             <p id="location-city" class="font-semibold text-lg text-secondary">[CITY], PA</p>
             <p class="text-gray-600 mt-2 text-sm">Delivery within 20 miles · $5 fee or free over $40</p>
           </div>
-          <div class="bg-cream rounded-2xl p-6 shadow-md text-sm space-y-2">
+          <div class="reveal reveal-right bg-cream rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow text-sm space-y-2">
             <div class="flex justify-between"><span>Mon</span><span class="text-red-600 font-semibold">Closed (fermenting)</span></div>
             <div class="flex justify-between"><span>Tue–Thu</span><span class="font-semibold text-secondary">12pm – 7pm</span></div>
             <div class="flex justify-between"><span>Fri–Sat</span><span class="font-semibold text-secondary">12pm – 8pm</span></div>
@@ -210,13 +243,13 @@
     <!-- Order -->
     <section id="order" class="py-20 md:py-28 bg-cream">
       <div class="max-w-2xl mx-auto px-4">
-        <div class="text-center mb-8">
+        <div class="text-center mb-8 reveal">
           <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mb-3">Checkout</h2>
           <p class="text-gray-600">Items from your cart will be submitted to our kitchen</p>
         </div>
 
         <!-- Success panel -->
-        <div id="order-success" class="hidden mb-8 bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+        <div id="order-success" class="hidden mb-8 bg-green-50 border border-green-200 rounded-2xl p-6 text-center success-pop">
           <div class="text-4xl mb-3">✅</div>
           <h3 class="font-display text-2xl font-bold text-secondary mb-2">Order Placed!</h3>
           <p class="text-gray-600 mb-1">Order ID: <strong id="success-order-id" class="text-primary font-mono"></strong></p>
@@ -226,7 +259,7 @@
           </a>
         </div>
 
-        <form id="order-form" class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-primary/10 space-y-6" novalidate>
+        <form id="order-form" class="reveal bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-primary/10 space-y-6" novalidate>
           <div id="form-errors" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm" role="alert">
             <p class="font-semibold mb-1">Please fix the following:</p>
             <ul id="error-list" class="list-disc list-inside space-y-1"></ul>
@@ -285,11 +318,11 @@
     <!-- Contact -->
     <section id="contact" class="py-20 bg-secondary text-white">
       <div class="max-w-4xl mx-auto px-4 text-center">
-        <h2 class="font-display font-bold text-3xl mb-8">Contact Us</h2>
+        <h2 class="font-display font-bold text-3xl mb-8 reveal">Contact Us</h2>
         <div class="grid sm:grid-cols-3 gap-4">
-          <a href="tel:+15551234567" class="contact-card bg-white/10 rounded-2xl p-6 hover:bg-white/20 transition-all"><i class="fa-solid fa-phone text-accent text-2xl mb-3"></i><p class="font-semibold">(555) 123-4567</p></a>
-          <a href="https://wa.me/15551234567" target="_blank" rel="noopener" class="contact-card bg-white/10 rounded-2xl p-6 hover:bg-white/20 transition-all"><i class="fa-brands fa-whatsapp text-[#25D366] text-2xl mb-3"></i><p class="font-semibold">WhatsApp</p></a>
-          <a href="https://instagram.com/chefbybirth" target="_blank" rel="noopener" class="contact-card bg-white/10 rounded-2xl p-6 hover:bg-white/20 transition-all"><i class="fa-brands fa-instagram text-accent text-2xl mb-3"></i><p class="font-semibold">@chefbybirth</p></a>
+          <a href="tel:+15551234567" class="contact-card reveal stagger-1 bg-white/10 rounded-2xl p-6 hover:bg-white/20 block"><i class="fa-solid fa-phone text-accent text-2xl mb-3 block"></i><p class="font-semibold">(555) 123-4567</p></a>
+          <a href="https://wa.me/15551234567" target="_blank" rel="noopener" class="contact-card reveal stagger-2 bg-white/10 rounded-2xl p-6 hover:bg-white/20 block"><i class="fa-brands fa-whatsapp text-[#25D366] text-2xl mb-3 block"></i><p class="font-semibold">WhatsApp</p></a>
+          <a href="https://instagram.com/chefbybirth" target="_blank" rel="noopener" class="contact-card reveal stagger-3 bg-white/10 rounded-2xl p-6 hover:bg-white/20 block"><i class="fa-brands fa-instagram text-accent text-2xl mb-3 block"></i><p class="font-semibold">@chefbybirth</p></a>
         </div>
       </div>
     </section>
