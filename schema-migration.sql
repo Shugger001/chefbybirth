@@ -5,7 +5,9 @@
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS spice_level TEXT DEFAULT 'medium';
 
--- Update get_order_status to include spice_level
+-- Must drop first: PostgreSQL cannot change RETURNS TABLE columns via CREATE OR REPLACE
+DROP FUNCTION IF EXISTS get_order_status(TEXT);
+
 CREATE OR REPLACE FUNCTION get_order_status(p_tracking_token TEXT)
 RETURNS TABLE (
   order_id       UUID,
