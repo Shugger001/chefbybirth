@@ -99,10 +99,9 @@
 
 /* ── Menu cards ── */
 .menu-card {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .menu-card:hover {
-  transform: translateY(-8px) scale(1.01);
   box-shadow: 0 18px 40px rgba(45, 106, 79, 0.2);
   border-color: rgba(217, 122, 43, 0.35);
 }
@@ -113,32 +112,24 @@
 .menu-card.menu-pop {
   animation: menuPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-.menu-filter-btn { transition: all 0.25s ease; }
+.menu-filter-btn { transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; }
 .menu-filter-btn.active {
   background: #2D6A4F; color: #fff;
-  transform: scale(1.06);
   box-shadow: 0 4px 14px rgba(45, 106, 79, 0.35);
 }
-.add-to-cart-btn:active { transform: scale(0.95); }
+.add-to-cart-btn:active { filter: brightness(0.92); }
 
 /* ── Buttons ── */
 .btn-primary, .btn-secondary {
-  transition: all 0.22s ease;
-  position: relative;
-  overflow: hidden;
+  transition: box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
-.btn-primary::after, .btn-secondary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.55s ease;
-}
-.btn-primary:hover::after, .btn-secondary:hover::after { transform: translateX(100%); }
 .btn-primary:hover, .btn-secondary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(217, 122, 43, 0.35);
+  box-shadow: 0 6px 18px rgba(217, 122, 43, 0.28);
+  filter: brightness(1.04);
+}
+.btn-primary:active, .btn-secondary:active {
+  filter: brightness(0.96);
+  box-shadow: 0 2px 8px rgba(217, 122, 43, 0.18);
 }
 
 /* ── Steps & about ── */
@@ -174,14 +165,13 @@
 
 /* ── Contact & floating btn ── */
 .contact-card {
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
-.contact-card:hover { transform: translateY(-8px) scale(1.03); }
-.contact-card i { transition: transform 0.35s ease; }
-.contact-card:hover i { transform: scale(1.15); }
-.floating-btn { transition: all 0.3s ease; }
-.floating-btn:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 14px 28px rgba(233, 196, 106, 0.45); }
-.floating-btn.hidden-scroll { opacity: 0; pointer-events: none; transform: translateY(24px) scale(0.9); }
+.contact-card:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); }
+.contact-card i { transition: color 0.3s ease; }
+.floating-btn { transition: box-shadow 0.3s ease, opacity 0.3s ease; }
+.floating-btn:hover { box-shadow: 0 14px 28px rgba(233, 196, 106, 0.45); }
+.floating-btn.hidden-scroll { opacity: 0; pointer-events: none; }
 .floating-btn.pulse-once { animation: orderPulse 2s ease-in-out 1; }
 
 /* ── Form & status ── */
@@ -316,7 +306,6 @@ input:focus, textarea:focus, select:focus {
   background: #D97A2B;
   color: white;
   box-shadow: 0 0 0 4px rgba(217, 122, 43, 0.25);
-  animation: statusPulse 2s ease-in-out infinite;
 }
 .tracking-step-label { display: flex; flex-direction: column; gap: 0.15rem; padding-top: 0.35rem; }
 .tracking-step-label span { font-size: 0.75rem; color: #6b7280; }
