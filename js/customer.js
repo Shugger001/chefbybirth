@@ -46,7 +46,45 @@
     const city = getSetting('business_city', C.BUSINESS_CITY);
     const cityEl = document.getElementById('location-city');
     if (cityEl) cityEl.textContent = city;
+
+    const phone = getSetting('business_phone', C.BUSINESS_PHONE_TEL);
+    const phoneDisplay = phone.replace(/^\+1/, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    const phoneEl = document.getElementById('contact-phone');
+    const phoneText = document.getElementById('contact-phone-text');
+    if (phoneEl) phoneEl.href = 'tel:' + phone.replace(/\s/g, '');
+    if (phoneText) phoneText.textContent = phoneDisplay || C.BUSINESS_PHONE;
+
+    const wa = getSetting('business_whatsapp', C.BUSINESS_WHATSAPP);
+    const waEl = document.getElementById('contact-whatsapp');
+    if (waEl) waEl.href = 'https://wa.me/' + wa.replace(/\D/g, '');
+
+    const igUrl = getSetting('instagram_url', 'https://instagram.com/' + C.BUSINESS_INSTAGRAM);
+    const igHandle = getSetting('instagram_handle', C.BUSINESS_INSTAGRAM);
+    ['contact-instagram', 'instagram-link'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.href = igUrl;
+    });
+    const igText = document.getElementById('contact-instagram-text');
+    if (igText) igText.textContent = '@' + igHandle.replace(/^@/, '');
+
     updateLiveStatus();
+  }
+
+  function parseDeliveryZipPrefixes() {
+    try { return JSON.parse(getSetting('delivery_zip_prefixes', '[]')); }
+    catch { return []; }
+  }
+
+  function validateDeliveryZip(address) {
+    const prefixes = parseDeliveryZipPrefixes();
+    const match = address.match(/\b(\d{5})\b/);
+    if (!match) return { ok: false, msg: 'Include a valid 5-digit ZIP code in your delivery address.' };
+    if (!prefixes.length) return { ok: true };
+    const zip = match[1];
+    if (!prefixes.some((p) => zip.startsWith(String(p)))) {
+      return { ok: false, msg: `Sorry, we don't deliver to ZIP ${zip}. We serve select Pennsylvania areas.` };
+    }
+    return { ok: true };
   }
 
   // ─── Menu ────────────────────────────────────────────────────────
@@ -99,6 +137,12 @@
       grouped[cat].forEach((item, i) => {
         const featured = item.name.includes('Classic Kenkey') ? ' featured' : '';
         const inCart = cart.find((c) => c.id === item.id);
+        const cartQty = inCart ? inCart.quantity : 0;
+        const stock = item.stock;
+        const stockNote = stock !== null && stock > 0
+          ? (stock <= 10 ? `<span class="text-xs font-semibold text-orange-700 bg-orange-50 px-2 py-1 rounded-full">Only ${stock} left</span>` : '')
+          : '';
+        const outOfStock = stock !== null && stock <= 0;
         html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal menu-pop" style="animation-delay:${i * 0.07}s" data-id="${item.id}">
           ${item.image_url ? `<img src="${esc(item.image_url)}" alt="" class="w-full h-36 object-cover rounded-xl mb-4" loading="lazy">` : ''}
           <div class="flex justify-between items-start gap-3 mb-2">
@@ -107,9 +151,11 @@
           </div>
           ${featured ? '<span class="inline-block text-xs font-bold uppercase bg-primary/10 text-primary px-2 py-0.5 rounded-full mb-2">Most Popular</span>' : ''}
           <p class="text-gray-600 text-sm leading-relaxed mb-4">${esc(item.description || '')}</p>
-          <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full"><i class="fa-solid fa-circle text-[6px] mr-1"></i>Available</span>
-            <button type="button" class="add-to-cart-btn btn-primary bg-primary hover:bg-primary-dark text-white text-sm font-semibold px-4 py-2 rounded-full flex items-center gap-1.5" data-id="${item.id}">
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            ${outOfStock
+              ? '<span class="text-xs font-semibold text-red-700 bg-red-50 px-2 py-1 rounded-full">Sold out</span>'
+              : `<span class="text-xs font-semibold text-green-700 bg-green-50 px-2 py-1 rounded-full"><i class="fa-solid fa-circle text-[6px] mr-1"></i>Available</span>${stockNote}`}
+            <button type="button" class="add-to-cart-btn btn-primary bg-primary hover:bg-primary-dark text-white text-sm font-semibold px-4 py-2 rounded-full flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed" data-id="${item.id}" ${outOfStock || (stock !== null && cartQty >= stock) ? 'disabled' : ''}>
               <i class="fa-solid fa-cart-plus"></i> ${inCart ? 'Add More' : 'Add'}
             </button>
           </div>
@@ -140,6 +186,11 @@
     const item = menuItems.find((m) => m.id === itemId);
     if (!item) return;
     const existing = cart.find((c) => c.id === itemId);
+    const newQty = (existing ? existing.quantity : 0) + qty;
+    if (item.stock !== null && item.stock > 0 && newQty > item.stock) {
+      showToast(`Only ${item.stock} available`, 'error');
+      return;
+    }
     if (existing) existing.quantity += qty;
     else cart.push({ id: item.id, name: item.name, price: Number(item.price), quantity: qty, category: item.category });
     updateCartUI(true);
@@ -165,6 +216,11 @@
   function setCartQty(itemId, qty) {
     const item = cart.find((c) => c.id === itemId);
     if (!item) return;
+    const menuItem = menuItems.find((m) => m.id === itemId);
+    if (menuItem?.stock !== null && menuItem.stock > 0 && qty > menuItem.stock) {
+      showToast(`Only ${menuItem.stock} available`, 'error');
+      return;
+    }
     if (qty <= 0) removeFromCart(itemId);
     else { item.quantity = qty; updateCartUI(); }
   }
@@ -353,6 +409,12 @@
     if (!pickup) errors.push('Pickup/delivery date & time is required');
     if (new Date(pickup) <= new Date()) errors.push('Date must be in the future');
     if (orderType === 'delivery' && !address) errors.push('Delivery address is required');
+    if (orderType === 'delivery' && address) {
+      const zipCheck = validateDeliveryZip(address);
+      if (!zipCheck.ok) errors.push(zipCheck.msg);
+    }
+
+    const spiceLevel = document.querySelector('input[name="spice-level"]:checked')?.value || 'medium';
 
     const hoursCheck = pickup ? isWithinBusinessHours(pickup) : { ok: true };
     if (!hoursCheck.ok) errors.push(hoursCheck.msg);
@@ -367,7 +429,7 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Placing order…';
 
-    const { data, error } = await supabase.rpc('create_order', {
+    const rpcPayload = {
       p_customer_name: name,
       p_phone: phone,
       p_email: email || '',
@@ -377,7 +439,15 @@
       p_total_amount: total,
       p_pickup_date: new Date(pickup).toISOString(),
       p_special_instructions: instructions || '',
-    });
+      p_spice_level: spiceLevel,
+    };
+
+    let { data, error } = await supabase.rpc('create_order', rpcPayload);
+
+    if (error && /spice|argument|function/i.test(error.message)) {
+      delete rpcPayload.p_spice_level;
+      ({ data, error } = await supabase.rpc('create_order', rpcPayload));
+    }
 
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Place Order';
@@ -407,10 +477,59 @@
     document.getElementById('order-form').reset();
     toggleDeliveryFields();
 
-    showOrderSuccess(orderId, trackingToken, name, phone, total, pickup, orderType, orderItems);
+    showOrderSuccess(orderId, trackingToken, name, phone, total, pickup, orderType, orderItems, spiceLevel);
+    showTrackingPanel(orderId, trackingToken, 'pending');
     subscribeOrderTracking(trackingToken);
     startOrderPolling(trackingToken);
     showToast('Order placed successfully!', 'success');
+  }
+
+  const TRACK_STEPS = ['pending', 'confirmed', 'ready', 'completed'];
+  const TRACK_LABELS = {
+    pending: 'Your order was received — we will confirm shortly.',
+    confirmed: 'Confirmed! Our kitchen is preparing your order.',
+    ready: 'Your order is ready for pickup or delivery!',
+    completed: 'Order complete — thank you and enjoy!',
+    cancelled: 'This order was cancelled. Contact us if you have questions.',
+  };
+
+  function showTrackingPanel(orderId, trackingToken, status) {
+    const empty = document.getElementById('tracking-empty');
+    const panel = document.getElementById('tracking-panel');
+    const idEl = document.getElementById('tracking-order-id');
+    if (!panel) return;
+    empty?.classList.add('hidden');
+    panel.classList.remove('hidden');
+    if (idEl) idEl.textContent = '#' + orderId.slice(0, 8).toUpperCase();
+    updateTrackingUI(status || 'pending');
+    if (trackingToken) {
+      localStorage.setItem('cbb_active_order', JSON.stringify({ id: orderId, tracking_token: trackingToken }));
+    }
+  }
+
+  function updateTrackingUI(status) {
+    const steps = document.querySelectorAll('.tracking-step');
+    const msgEl = document.getElementById('tracking-status-msg');
+    const currentIdx = TRACK_STEPS.indexOf(status);
+
+    steps.forEach((step) => {
+      const stepName = step.dataset.step;
+      const idx = TRACK_STEPS.indexOf(stepName);
+      step.classList.remove('active', 'done');
+      if (status === 'cancelled') {
+        step.classList.toggle('done', idx < 0);
+      } else if (idx < currentIdx) {
+        step.classList.add('done');
+      } else if (idx === currentIdx) {
+        step.classList.add('active');
+      }
+    });
+
+    if (msgEl) {
+      msgEl.textContent = TRACK_LABELS[status] || 'Tracking your order…';
+      msgEl.className = 'text-center mt-6 text-sm font-semibold ' +
+        (status === 'ready' ? 'text-green-700' : status === 'cancelled' ? 'text-red-600' : 'text-secondary');
+    }
   }
 
   function showFormErrors(errors) {
@@ -421,7 +540,7 @@
     box.classList.remove('hidden');
   }
 
-  function showOrderSuccess(orderId, trackingToken, name, phone, total, pickup, orderType, items) {
+  function showOrderSuccess(orderId, trackingToken, name, phone, total, pickup, orderType, items, spiceLevel) {
     const panel = document.getElementById('order-success');
     const shortId = orderId.slice(0, 8).toUpperCase();
     document.getElementById('success-order-id').textContent = shortId;
@@ -432,19 +551,26 @@
 
     let msg = `🍽️ *Order Confirmation – Chef by Birth*\n\n`;
     msg += `Order #${shortId}\n👤 ${name}\n📱 ${phone}\n`;
-    msg += `${orderType === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}: ${pickupFmt}\n\n`;
+    msg += `${orderType === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}: ${pickupFmt}\n`;
+    msg += `🌶️ Spice: ${spiceLevel || 'medium'}\n\n`;
     items.forEach((i) => { msg += `• ${i.quantity}x ${i.name}\n`; });
     msg += `\n💰 Total: $${total.toFixed(2)}\n\nThank you!`;
 
     const waNum = getSetting('business_whatsapp', C.BUSINESS_WHATSAPP);
     const waBtn = document.getElementById('whatsapp-confirm-btn');
-    waBtn.href = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+    const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+    waBtn.href = waUrl;
 
     panel.classList.remove('hidden');
     panel.classList.remove('success-pop');
     void panel.offsetWidth;
     panel.classList.add('success-pop');
     panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+      showToast('Opening WhatsApp to confirm your order…', 'info', 3000);
+      window.open(waUrl, '_blank', 'noopener');
+    }, 2000);
   }
 
   // ─── Realtime ────────────────────────────────────────────────────
@@ -457,6 +583,7 @@
   }
 
   function handleOrderStatusUpdate(status) {
+    updateTrackingUI(status);
     if (status === 'ready') {
       showToast('🎉 Your order is READY for pickup!', 'success', 8000);
       const banner = document.getElementById('order-ready-banner');
@@ -486,6 +613,16 @@
         handleOrderStatusUpdate(payload.new?.status);
       })
       .subscribe();
+
+    fetchAndShowTracking(stored);
+  }
+
+  async function fetchAndShowTracking(token) {
+    if (!supabase || !token) return;
+    const { data, error } = await supabase.rpc('get_order_status', { p_tracking_token: token });
+    if (error || !data?.length) return;
+    const row = data[0];
+    showTrackingPanel(row.order_id, token, row.status);
   }
 
   let pollInterval = null;
@@ -501,6 +638,7 @@
       const status = data[0].status;
       if (status !== lastStatus) {
         if (lastStatus !== null) handleOrderStatusUpdate(status);
+        else updateTrackingUI(status);
         lastStatus = status;
       }
       if (status === 'completed' || status === 'cancelled') clearInterval(pollInterval);
@@ -623,7 +761,7 @@
     const floatBtn = document.getElementById('floating-order-btn');
     const heroImg = document.querySelector('.hero-bg-image');
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const sections = ['about', 'menu', 'how-it-works', 'hours', 'order', 'contact'];
+    const sections = ['about', 'kenkey', 'menu', 'how-it-works', 'reviews', 'hours', 'track-order', 'order', 'faq', 'contact'];
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let floatPulseDone = false;
 
@@ -675,6 +813,15 @@
 
     document.getElementById('order-form')?.addEventListener('submit', submitOrder);
 
+    document.getElementById('track-token-btn')?.addEventListener('click', () => {
+      const token = document.getElementById('track-token-input')?.value.trim();
+      if (!token) { showToast('Enter a tracking token', 'error'); return; }
+      localStorage.setItem('cbb_active_order', JSON.stringify({ tracking_token: token }));
+      subscribeOrderTracking(token);
+      startOrderPolling(token);
+      fetchAndShowTracking(token);
+    });
+
     const pickupInput = document.getElementById('pickup-time');
     if (pickupInput) {
       const now = new Date();
@@ -691,6 +838,7 @@
     if (saved?.tracking_token) {
       subscribeOrderTracking(saved.tracking_token);
       startOrderPolling(saved.tracking_token);
+      fetchAndShowTracking(saved.tracking_token);
     }
 
     setInterval(updateLiveStatus, 60000);

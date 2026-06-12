@@ -265,3 +265,69 @@ input:focus, textarea:focus, select:focus {
 /* Admin */
 .tab-btn.active { background: #2D6A4F; color: white; }
 .modal { backdrop-filter: blur(4px); }
+
+/* ── Order tracking stepper ── */
+.tracking-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 2rem;
+}
+.tracking-stepper::before {
+  content: '';
+  position: absolute;
+  left: 1.15rem;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  width: 3px;
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+.tracking-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  position: relative;
+  opacity: 0.45;
+  transition: opacity 0.35s ease;
+}
+.tracking-step.done, .tracking-step.active { opacity: 1; }
+.tracking-step-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 0.35s ease;
+}
+.tracking-step.done .tracking-step-icon {
+  background: #2D6A4F;
+  color: white;
+}
+.tracking-step.active .tracking-step-icon {
+  background: #D97A2B;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(217, 122, 43, 0.25);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+.tracking-step-label { display: flex; flex-direction: column; gap: 0.15rem; padding-top: 0.35rem; }
+.tracking-step-label span { font-size: 0.75rem; color: #6b7280; }
+
+/* ── FAQ ── */
+.faq-item[open] { box-shadow: 0 8px 24px rgba(45, 106, 79, 0.08); }
+.faq-summary { list-style: none; }
+.faq-summary::-webkit-details-marker { display: none; }
+
+/* ── Reviews & kenkey facts ── */
+.review-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.review-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(45, 106, 79, 0.12); }
+.kenkey-fact { transition: transform 0.3s ease; }
+.kenkey-fact:hover { transform: translateY(-4px); }

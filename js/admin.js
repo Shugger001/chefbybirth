@@ -206,7 +206,9 @@
     document.getElementById('modal-total').textContent = '$' + Number(order.total_amount).toFixed(2);
     document.getElementById('modal-pickup').textContent = new Date(order.pickup_date).toLocaleString();
     document.getElementById('modal-instructions').textContent = order.special_instructions || '—';
-    document.getElementById('modal-items').textContent = JSON.stringify(order.order_items, null, 2);
+    document.getElementById('modal-spice').textContent = order.spice_level || 'medium';
+    document.getElementById('modal-items').textContent = (order.order_items || [])
+      .map((i) => `${i.quantity}x ${i.name}`).join('\n') || '—';
     document.getElementById('modal-status').value = order.status;
     document.getElementById('modal-whatsapp').checked = order.whatsapp_sent;
 
@@ -237,6 +239,7 @@
         <td class="px-4 py-3 font-medium">${esc(item.name)}</td>
         <td class="px-4 py-3 text-sm capitalize text-gray-500">${item.category}</td>
         <td class="px-4 py-3 font-semibold text-primary">$${Number(item.price).toFixed(2)}</td>
+        <td class="px-4 py-3 text-sm text-gray-500">${item.stock !== null ? item.stock : '∞'}</td>
         <td class="px-4 py-3">
           <button type="button" class="toggle-avail relative w-11 h-6 rounded-full transition-colors ${item.is_available ? 'bg-secondary' : 'bg-gray-300'}" data-id="${item.id}" aria-label="Toggle availability">
             <span class="absolute top-0.5 ${item.is_available ? 'left-5' : 'left-0.5'} w-5 h-5 bg-white rounded-full shadow transition-all"></span>
@@ -287,6 +290,7 @@
         document.getElementById('menu-form-price').value = item.price;
         document.getElementById('menu-form-category').value = item.category;
         document.getElementById('menu-form-image').value = item.image_url || '';
+        document.getElementById('menu-form-stock').value = item.stock !== null ? item.stock : '';
         document.getElementById('menu-form-available').checked = item.is_available;
         document.getElementById('menu-modal-title').textContent = 'Edit Menu Item';
       }
@@ -299,12 +303,14 @@
   async function saveMenuItem(e) {
     e.preventDefault();
     const id = document.getElementById('menu-form-id').value;
+    const stockVal = document.getElementById('menu-form-stock').value;
     const payload = {
       name: document.getElementById('menu-form-name').value.trim(),
       description: document.getElementById('menu-form-desc').value.trim(),
       price: parseFloat(document.getElementById('menu-form-price').value),
       category: document.getElementById('menu-form-category').value,
       image_url: document.getElementById('menu-form-image').value.trim() || null,
+      stock: stockVal === '' ? null : parseInt(stockVal, 10),
       is_available: document.getElementById('menu-form-available').checked,
     };
 
@@ -331,6 +337,8 @@
     document.getElementById('settings-whatsapp').value = settings.business_whatsapp || '';
     document.getElementById('settings-email').value = settings.business_email || '';
     document.getElementById('settings-city').value = settings.business_city || '';
+    document.getElementById('settings-delivery-zips').value = settings.delivery_zip_prefixes || '[]';
+    document.getElementById('settings-instagram').value = settings.instagram_url || '';
   }
 
   async function saveSettings(e) {
@@ -344,6 +352,8 @@
       { key: 'business_whatsapp', value: document.getElementById('settings-whatsapp').value },
       { key: 'business_email', value: document.getElementById('settings-email').value },
       { key: 'business_city', value: document.getElementById('settings-city').value },
+      { key: 'delivery_zip_prefixes', value: document.getElementById('settings-delivery-zips').value },
+      { key: 'instagram_url', value: document.getElementById('settings-instagram').value },
     ];
 
     for (const u of updates) {
@@ -354,15 +364,65 @@
     loadSettings();
   }
 
-  // ─── Realtime ────────────────────────────────────────────────────
+  function printKitchenTicket(order) {
+    const shortId = order.id.slice(0, 8).toUpperCase();
+    const items = (order.order_items || []).map((i) => `<tr><td>${i.quantity}</td><td>${esc(i.name)}</td><td>$${(i.price * i.quantity).toFixed(2)}</td></tr>`).join('');
+    const html = `<!DOCTYPE html><html><head><title>Ticket #${shortId}</title>
+      <style>body{font-family:monospace;padding:20px;max-width:320px}h1{font-size:18px;margin:0 0 8px}table{width:100%;border-collapse:collapse;font-size:14px}td{padding:4px 0;border-bottom:1px dashed #ccc}.meta{font-size:12px;margin:8px 0}.big{font-size:16px;font-weight:bold}</style></head>
+      <body onload="window.print()">
+      <h1>🍲 Chef by Birth</h1>
+      <p class="big">ORDER #${shortId}</p>
+      <div class="meta">${esc(order.customer_name)} · ${esc(order.phone)}<br>
+      ${order.order_type.toUpperCase()} · ${new Date(order.pickup_date).toLocaleString()}<br>
+      Spice: ${esc(order.spice_level || 'medium')}</div>
+      ${order.delivery_address ? `<div class="meta">📍 ${esc(order.delivery_address)}</div>` : ''}
+      <table><thead><tr><th>Qty</th><th>Item</th><th>Amt</th></tr></thead><tbody>${items}</tbody></table>
+      <p class="big">TOTAL: $${Number(order.total_amount).toFixed(2)}</p>
+      ${order.special_instructions ? `<p class="meta">Note: ${esc(order.special_instructions)}</p>` : ''}
+      </body></html>`;
+    const w = window.open('', '_blank', 'width=400,height=600');
+    if (w) { w.document.write(html); w.document.close(); }
+  }
+
+  function printOrderFromModal() {
+    const order = orders.find((o) => o.id === currentOrderId);
+    if (order) printKitchenTicket(order);
+  }
+
+  function playNewOrderSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 1100].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        const t = ctx.currentTime + i * 0.15;
+        gain.gain.setValueAtTime(0.25, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        osc.start(t);
+        osc.stop(t + 0.2);
+      });
+    } catch { /* audio blocked */ }
+  }
+
+  let knownOrderIds = new Set();
+
   function subscribeOrders() {
+    orders.forEach((o) => knownOrderIds.add(o.id));
     if (ordersChannel) return;
     ordersChannel = supabase
       .channel('admin-orders')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, () => {
+        playNewOrderSound();
+        toast('New order received!', 'success', 5000);
         loadOrders();
         loadAnalytics();
-        toast('Orders updated', 'info', 2000);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, () => {
+        loadOrders();
+        loadAnalytics();
       })
       .subscribe();
   }
@@ -414,6 +474,7 @@
     document.getElementById('date-to')?.addEventListener('change', loadOrders);
     document.getElementById('refresh-orders')?.addEventListener('click', loadOrders);
     document.getElementById('save-order-btn')?.addEventListener('click', updateOrderFromModal);
+    document.getElementById('print-order-btn')?.addEventListener('click', printOrderFromModal);
     document.getElementById('close-order-modal')?.addEventListener('click', () => document.getElementById('order-modal').classList.add('hidden'));
     document.getElementById('add-menu-btn')?.addEventListener('click', () => openMenuForm(null));
     document.getElementById('menu-form')?.addEventListener('submit', saveMenuItem);

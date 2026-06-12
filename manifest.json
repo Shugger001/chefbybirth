@@ -1,0 +1,19 @@
+{
+  "name": "Chef by Birth",
+  "short_name": "Chef by Birth",
+  "description": "Authentic Ghanaian kenkey — order online for pickup or delivery in Pennsylvania.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEFAE0",
+  "theme_color": "#2D6A4F",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/hero-kenkey.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "shopping"]
+}

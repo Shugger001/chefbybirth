@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS orders (
   total_amount         DECIMAL(10, 2) NOT NULL CHECK (total_amount >= 0),
   pickup_date          TIMESTAMPTZ NOT NULL,
   special_instructions TEXT,
+  spice_level          TEXT DEFAULT 'medium',
   status               TEXT NOT NULL DEFAULT 'pending'
                          CHECK (status IN ('pending', 'confirmed', 'ready', 'completed', 'cancelled')),
   whatsapp_sent        BOOLEAN NOT NULL DEFAULT false,
@@ -125,13 +126,14 @@ RETURNS TABLE (
   pickup_date    TIMESTAMPTZ,
   customer_name  TEXT,
   total_amount   DECIMAL,
-  order_type     TEXT
+  order_type     TEXT,
+  spice_level    TEXT
 )
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT o.id, o.status, o.pickup_date, o.customer_name, o.total_amount, o.order_type
+  SELECT o.id, o.status, o.pickup_date, o.customer_name, o.total_amount, o.order_type, o.spice_level
   FROM orders o
   WHERE o.tracking_token = p_tracking_token
   LIMIT 1;
@@ -152,7 +154,8 @@ CREATE OR REPLACE FUNCTION create_order(
   p_order_items          JSONB,
   p_total_amount         DECIMAL,
   p_pickup_date          TIMESTAMPTZ,
-  p_special_instructions TEXT
+  p_special_instructions TEXT,
+  p_spice_level          TEXT DEFAULT 'medium'
 )
 RETURNS TABLE (order_id UUID, tracking_token TEXT)
 LANGUAGE plpgsql
@@ -169,10 +172,10 @@ BEGIN
 
   INSERT INTO orders (
     customer_name, phone, email, order_type, delivery_address,
-    order_items, total_amount, pickup_date, special_instructions, status
+    order_items, total_amount, pickup_date, special_instructions, spice_level, status
   ) VALUES (
     p_customer_name, p_phone, NULLIF(p_email, ''), p_order_type, NULLIF(p_delivery_address, ''),
-    p_order_items, p_total_amount, p_pickup_date, NULLIF(p_special_instructions, ''), 'pending'
+    p_order_items, p_total_amount, p_pickup_date, NULLIF(p_special_instructions, ''), COALESCE(p_spice_level, 'medium'), 'pending'
   )
   RETURNING id, orders.tracking_token INTO v_id, v_token;
 
@@ -180,7 +183,7 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION create_order(TEXT,TEXT,TEXT,TEXT,TEXT,JSONB,DECIMAL,TIMESTAMPTZ,TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION create_order(TEXT,TEXT,TEXT,TEXT,TEXT,JSONB,DECIMAL,TIMESTAMPTZ,TEXT,TEXT) TO anon, authenticated;
 
 -- =============================================================================
 -- RPC: Business hours validation helper
@@ -352,7 +355,11 @@ INSERT INTO settings (key, value) VALUES
   ('business_phone', '+15551234567'),
   ('business_whatsapp', '15551234567'),
   ('business_email', 'hello@chefbybirth.com'),
-  ('business_city', '[CITY], PA')
+  ('business_city', '[CITY], PA'),
+  ('delivery_zip_prefixes', '["190","191","193","194","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","195","196"]'),
+  ('instagram_handle', 'chefbybirth'),
+  ('instagram_url', 'https://instagram.com/chefbybirth'),
+  ('site_url', 'https://chefbybirth.vercel.app')
 ON CONFLICT (key) DO NOTHING;
 
 -- =============================================================================

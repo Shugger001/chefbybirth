@@ -10,6 +10,9 @@ Chefbybirth/
 ├── admin.html              # Password-protected admin dashboard
 ├── config.js               # Supabase & business config (edit this!)
 ├── schema.sql              # Database tables, RLS, seeds
+├── schema-migration.sql    # Additive migration for existing DBs
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service worker (offline cache)
 ├── vercel.json             # Vercel deploy config
 ├── netlify.toml            # Netlify deploy config (optional)
 ├── README.md               # This file
@@ -34,6 +37,8 @@ Chefbybirth/
 2. Paste the entire contents of `schema.sql`
 3. Click **Run**
 4. Verify tables: `menu_items`, `orders`, `settings`, `order_tracking`
+
+**Already ran schema.sql?** Run `schema-migration.sql` instead to add spice level, delivery ZIPs, and updated RPCs without resetting data.
 
 ---
 
@@ -87,7 +92,10 @@ supabase secrets set YOUR_BUSINESS_PHONE_NUMBER=whatsapp:+15551234567
 ```bash
 supabase functions deploy order-notification --no-verify-jwt
 supabase functions deploy update-menu-status --no-verify-jwt
+supabase functions deploy order-email --no-verify-jwt
 ```
+
+For email confirmations (optional), set `RESEND_API_KEY` and `BUSINESS_EMAIL` secrets, then add a webhook on `orders` INSERT pointing to `order-email`.
 
 ### Create Database Webhooks
 
@@ -143,6 +151,8 @@ npx serve .
 | `TWILIO_AUTH_TOKEN` | order-notification | Optional |
 | `TWILIO_WHATSAPP_NUMBER` | order-notification | Optional |
 | `YOUR_BUSINESS_PHONE_NUMBER` | order-notification | Optional |
+| `RESEND_API_KEY` | order-email | Optional |
+| `BUSINESS_EMAIL` | order-email | Optional |
 
 **Never expose `SUPABASE_SERVICE_ROLE_KEY` in `config.js` or frontend code.**
 
@@ -152,22 +162,31 @@ npx serve .
 
 ### Customer (`index.html`)
 - Live menu from Supabase (updates without redeploying)
-- Shopping cart with quantity controls
+- Shopping cart with quantity controls and stock limits
 - Pickup / delivery toggle ($5 fee, free over $40)
+- Delivery ZIP validation (PA prefixes from settings)
+- Spice level selector at checkout
 - Business hours validation
 - 24-hour notice for 10+ kenkey pieces
 - Order stored in database with tracking token
-- WhatsApp confirmation link after order
+- Visual order tracking stepper (Pending → Confirmed → Ready → Completed)
+- Auto-open WhatsApp confirmation after checkout
+- Settings-driven contact info (phone, WhatsApp, Instagram)
+- FAQ, kenkey explainer, and customer reviews sections
+- SEO: Open Graph, Twitter cards, JSON-LD Restaurant schema
+- PWA: installable via manifest + service worker
 - Realtime menu availability updates
 - Order status notifications (when status → ready)
 
 ### Admin (`/admin`)
 - Supabase Auth login
 - Realtime orders table with status filters
+- **New order sound alert** on INSERT
+- **Print kitchen ticket** from order modal
 - Update order status workflow
 - Mark WhatsApp sent
-- Menu CRUD + availability toggle
-- Settings: hours, delivery fee, radius
+- Menu CRUD + availability toggle + **stock field**
+- Settings: hours, delivery fee, radius, **delivery ZIP prefixes**, Instagram
 - Analytics: today's orders, weekly revenue, popular item
 
 ---
