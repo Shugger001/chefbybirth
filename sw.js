@@ -1,4 +1,4 @@
-const CACHE = 'chefbybirth-v3';
+const CACHE = 'chefbybirth-v4';
 const ASSETS = [
   '/',
   '/index.html',
@@ -19,6 +19,7 @@ const ASSETS = [
   '/js/layout.js',
   '/config.js',
   '/assets/hero-kenkey.png',
+  '/assets/price-list.png',
   '/manifest.json',
 ];
 

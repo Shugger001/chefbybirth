@@ -57,9 +57,9 @@
           <!-- Order type -->
           <fieldset>
             <legend class="font-display font-bold text-secondary mb-3">Order Type</legend>
-            <div class="flex gap-4">
-              <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="order-type" value="pickup" checked class="accent-primary w-4 h-4"> Pickup</label>
-              <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="order-type" value="delivery" class="accent-primary w-4 h-4"> Delivery (+$5, free over $40)</label>
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="order-type" value="pickup" checked class="accent-primary w-4 h-4"> Pickup (Whitehall, PA)</label>
+              <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="order-type" value="delivery" class="accent-primary w-4 h-4"> Shipping (fees vary by state)</label>
             </div>
           </fieldset>
 
@@ -79,9 +79,9 @@
           </div>
 
           <div id="delivery-address-wrap" class="hidden">
-            <label for="delivery-address" class="block text-sm font-semibold mb-1">Delivery Address *</label>
-            <textarea id="delivery-address" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Street, city, ZIP code"></textarea>
-            <p id="delivery-zip-hint" class="text-xs text-gray-500 mt-1">We deliver to select Pennsylvania ZIP codes. Include your 5-digit ZIP.</p>
+            <label for="delivery-address" class="block text-sm font-semibold mb-1">Shipping Address *</label>
+            <textarea id="delivery-address" rows="2" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Full name, street, city, state, ZIP"></textarea>
+            <p id="delivery-zip-hint" class="text-xs text-gray-500 mt-1">Shipping fees depend on your state. We'll confirm the total before you pay.</p>
           </div>
 
           <fieldset>
@@ -110,6 +110,23 @@
           <div>
             <label for="instructions" class="block text-sm font-semibold mb-1">Special Instructions</label>
             <textarea id="instructions" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20" placeholder="Allergies, spice level, etc."></textarea>
+          </div>
+
+          <div class="p-4 bg-cream rounded-xl border border-primary/10 text-sm text-gray-700 space-y-2" role="note">
+            <p class="font-semibold text-secondary"><i class="fa-solid fa-circle-info text-primary mr-1"></i> Before you pay</p>
+            <p>Make sure we have confirmed your order before payment. <strong>Payment confirms your order.</strong> After paying, send your full name and shipping address via WhatsApp.</p>
+          </div>
+
+          <div id="payment-info" class="p-4 sm:p-5 bg-secondary/5 rounded-xl border border-secondary/10 text-sm space-y-3">
+            <p class="font-display font-bold text-secondary">Payment Details</p>
+            <div class="flex items-start gap-3">
+              <span class="text-green-600 text-lg mt-0.5"><i class="fa-solid fa-dollar-sign"></i></span>
+              <div><p class="font-semibold text-secondary">Cash App</p><p id="payment-cash-app" class="text-gray-600 font-mono">$RhodaEmefaAmedeku</p></div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="text-purple-600 text-lg mt-0.5"><i class="fa-solid fa-building-columns"></i></span>
+              <div><p class="font-semibold text-secondary">Zelle</p><p class="text-gray-600"><span id="payment-zelle-name">Rhoda Amedeku</span> · <span id="payment-zelle-email" class="break-all">Rhodalineemefa@outlook.com</span></p></div>
+            </div>
           </div>
 
           <button type="submit" id="submit-order-btn" class="btn-primary w-full bg-primary hover:bg-primary-dark text-white font-semibold py-4 rounded-full text-lg flex items-center justify-center gap-2">

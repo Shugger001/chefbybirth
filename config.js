@@ -20,11 +20,11 @@ const CONFIG = {
 
   // Business contact (frontend fallbacks before settings load)
   BUSINESS_NAME: 'Chef by Birth',
-  BUSINESS_PHONE: '(555) 123-4567',
-  BUSINESS_PHONE_TEL: '+15551234567',
-  BUSINESS_WHATSAPP: '15551234567',
-  BUSINESS_EMAIL: 'hello@chefbybirth.com',
-  BUSINESS_CITY: '[CITY], PA',
+  BUSINESS_PHONE: '(484) 347-8213',
+  BUSINESS_PHONE_TEL: '+14843478213',
+  BUSINESS_WHATSAPP: '14843478213',
+  BUSINESS_EMAIL: 'Rhodalineemefa@outlook.com',
+  BUSINESS_CITY: 'Whitehall, Pennsylvania',
   BUSINESS_INSTAGRAM: 'chefbybirth',
 
   // Admin route

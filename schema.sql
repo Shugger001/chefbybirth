@@ -320,19 +320,13 @@ ALTER PUBLICATION supabase_realtime ADD TABLE order_tracking;
 -- =============================================================================
 
 INSERT INTO menu_items (name, description, price, category, is_available) VALUES
-  ('Classic Kenkey & Fried Fish', 'Two kenkey balls + whole crispy fried fish + shito + fresh vegetables', 12.99, 'kenkey', true),
-  ('Kenkey with Grilled Tilapia', 'Grilled tilapia (Ghanaian spices) + two kenkey + shito + onions & tomatoes', 15.99, 'kenkey', true),
-  ('Vegetarian Kenkey Plate', 'Two kenkey + shito + avocado + boiled eggs + fresh salad', 10.99, 'kenkey', true),
-  ('Kenkey & Chicken Stew', 'Two kenkey + rich Ghanaian tomato stew with chicken', 13.99, 'kenkey', true),
-  ('Extra Kenkey (1 piece)', 'One additional kenkey ball', 2.50, 'kenkey', true),
-  ('Shito (2oz)', 'Homemade spicy black pepper sauce', 1.50, 'shito', true),
-  ('Fried Fish (single)', 'Single crispy fried fish', 5.00, 'proteins', true),
-  ('Grilled Tilapia (whole)', 'Whole grilled tilapia with Ghanaian spices', 8.00, 'proteins', true),
-  ('Boiled Eggs (2)', 'Two boiled eggs', 2.00, 'proteins', true),
-  ('Sobolo (Hibiscus)', 'Traditional hibiscus drink', 3.50, 'drinks', true),
-  ('Asana (Millet)', 'Fermented millet drink', 3.50, 'drinks', true),
-  ('Malta Guinness', 'Malta Guinness bottled drink', 3.00, 'drinks', true),
-  ('Canned Soda', 'Assorted canned soda', 1.50, 'drinks', true)
+  ('1 Ball of Kenkey', 'Single ball of traditional fermented kenkey', 5.00, 'kenkey', true),
+  ('Box of Kenkey (10 balls)', 'Full box — 10 balls of fermented kenkey', 50.00, 'kenkey', true),
+  ('Chofi (6 pieces)', 'Six pieces of chofi — we don''t do fish', 30.00, 'proteins', true),
+  ('Turkey Wings (6 pieces)', 'Six seasoned turkey wings', 30.00, 'proteins', true),
+  ('Shito — Small', 'Homemade shito — small size', 30.00, 'shito', true),
+  ('Shito — Medium', 'Homemade shito — medium size', 50.00, 'shito', true),
+  ('Shito — Large', 'Homemade shito — large size', 100.00, 'shito', true)
 ON CONFLICT (name) DO NOTHING;
 
 -- =============================================================================
@@ -352,18 +346,21 @@ INSERT INTO settings (key, value) VALUES
   ('delivery_radius_miles', '20'),
   ('delivery_fee', '5.00'),
   ('free_delivery_threshold', '40.00'),
-  ('business_phone', '+15551234567'),
-  ('business_whatsapp', '15551234567'),
-  ('business_email', 'hello@chefbybirth.com'),
-  ('business_city', '[CITY], PA'),
+  ('business_phone', '+14843478213'),
+  ('business_whatsapp', '14843478213'),
+  ('business_email', 'Rhodalineemefa@outlook.com'),
+  ('business_city', 'Whitehall, Pennsylvania'),
   ('delivery_zip_prefixes', '["190","191","193","194","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","195","196"]'),
   ('instagram_handle', 'chefbybirth'),
   ('instagram_url', 'https://instagram.com/chefbybirth'),
   ('site_url', 'https://chefbybirth.vercel.app'),
-  ('site_announcement', '🎉 Welcome! Free shito with every main plate this week.'),
-  ('featured_menu_item_id', '1'),
-  ('map_embed_query', 'Pennsylvania, USA'),
-  ('ticker_messages', '["🔥 Fresh kenkey fermented 3 days","🚚 Free delivery on orders over $40","🌶️ Homemade shito — family recipe"]')
+  ('site_announcement', '📦 Shipping fees vary by state. Confirm your order with us before payment!'),
+  ('featured_menu_item_id', '2'),
+  ('map_embed_query', 'Whitehall, Pennsylvania'),
+  ('payment_cash_app', '$RhodaEmefaAmedeku'),
+  ('payment_zelle_name', 'Rhoda Amedeku'),
+  ('payment_zelle_email', 'Rhodalineemefa@outlook.com'),
+  ('ticker_messages', '["🌽 1 ball $5 · Box of 10 $50","🍗 Chofi & turkey wings — 6 for $30","🌶️ Shito: Small $30 · Medium $50 · Large $100","📍 Based in Whitehall, PA — we ship nationwide"]')
 ON CONFLICT (key) DO NOTHING;
 
 -- =============================================================================

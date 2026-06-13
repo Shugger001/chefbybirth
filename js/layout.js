@@ -87,9 +87,9 @@
       </nav>
     </aside>
     ${isHome ? '' : `<div class="ticker-wrap fixed top-14 sm:top-16 md:top-20 left-0 right-0 z-40 py-2 safe-ticker" aria-hidden="true"><div class="ticker-track">
-      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-fire mr-2"></i>Fresh kenkey fermented 3 days</span>
-      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-truck mr-2"></i>Free delivery on orders over $40</span>
-      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-pepper-hot mr-2"></i>Homemade shito — family recipe</span>
+      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-bowl-food mr-2"></i>1 ball $5 · Box of 10 $50</span>
+      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-drumstick-bite mr-2"></i>Chofi & turkey wings — 6 for $30</span>
+      <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-pepper-hot mr-2"></i>Shito from $30</span>
     </div></div>`}`;
   }
 
@@ -131,7 +131,7 @@
       <div id="cart-items" class="flex-1 overflow-y-auto px-5"><p class="text-gray-500 text-center py-8 text-sm">Your cart is empty</p></div>
       <div class="p-5 border-t border-gray-100 bg-cream/50 space-y-2">
         <div class="flex justify-between text-sm"><span>Subtotal</span><span id="cart-subtotal" class="font-semibold">$0.00</span></div>
-        <div id="delivery-fee-row" class="hidden flex justify-between text-sm"><span>Delivery fee</span><span id="cart-delivery-fee" class="font-semibold">$5.00</span></div>
+        <div id="delivery-fee-row" class="hidden flex justify-between text-sm text-gray-500"><span>Shipping</span><span id="cart-delivery-fee" class="font-semibold italic">Quoted at confirmation</span></div>
         <div class="flex justify-between font-display text-lg font-bold text-secondary pt-1 border-t border-gray-200"><span>Total</span><span id="cart-total">$0.00</span></div>
         <a href="/order.html" id="cart-checkout-btn" class="btn-primary block text-center bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-full mt-3">Checkout</a>
       </div>

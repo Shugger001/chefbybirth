@@ -112,6 +112,20 @@
     updateTicker();
     renderFeaturedSpecial();
     updateLiveStatus();
+    applyPaymentUI();
+  }
+
+  function applyPaymentUI() {
+    const cashApp = getSetting('payment_cash_app', '$RhodaEmefaAmedeku');
+    const zelleName = getSetting('payment_zelle_name', 'Rhoda Amedeku');
+    const zelleEmail = getSetting('payment_zelle_email', 'Rhodalineemefa@outlook.com');
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('payment-cash-app', cashApp);
+    set('payment-zelle-name', zelleName);
+    set('payment-zelle-email', zelleEmail);
+    document.querySelectorAll('[data-payment-cash-app]').forEach((el) => { el.textContent = cashApp; });
+    document.querySelectorAll('[data-payment-zelle-name]').forEach((el) => { el.textContent = zelleName; });
+    document.querySelectorAll('[data-payment-zelle-email]').forEach((el) => { el.textContent = zelleEmail; });
   }
 
   function renderHoursTable() {
@@ -174,14 +188,8 @@
   }
 
   function validateDeliveryZip(address) {
-    const prefixes = parseDeliveryZipPrefixes();
-    const match = address.match(/\b(\d{5})\b/);
-    if (!match) return { ok: false, msg: 'Include a valid 5-digit ZIP code in your delivery address.' };
-    if (!prefixes.length) return { ok: true };
-    const zip = match[1];
-    if (!prefixes.some((p) => zip.startsWith(String(p)))) {
-      return { ok: false, msg: `Sorry, we don't deliver to ZIP ${zip}. We serve select Pennsylvania areas.` };
-    }
+    const match = address.match(/\b(\d{5})(?:-\d{4})?\b/);
+    if (!match) return { ok: false, msg: 'Include a valid 5-digit ZIP code in your shipping address.' };
     return { ok: true };
   }
 
@@ -234,7 +242,7 @@
 
   const MENU_CATEGORIES = ['kenkey', 'proteins', 'shito', 'drinks'];
   const CATEGORY_LABELS = { kenkey: 'Kenkey Deals', proteins: 'Proteins', shito: 'Shito', drinks: 'Drinks' };
-  const CATEGORY_ICONS = { kenkey: 'fa-bowl-food', proteins: 'fa-fish', shito: 'fa-pepper-hot', drinks: 'fa-glass-water' };
+  const CATEGORY_ICONS = { kenkey: 'fa-bowl-food', proteins: 'fa-drumstick-bite', shito: 'fa-pepper-hot', drinks: 'fa-glass-water' };
   const CATEGORY_GRID = { kenkey: 'lg:grid-cols-2', proteins: 'lg:grid-cols-3', shito: 'lg:grid-cols-3', drinks: 'lg:grid-cols-4' };
 
   function normalizeCategory(item) {
@@ -281,7 +289,7 @@
         <div class="grid sm:grid-cols-2 ${CATEGORY_GRID[cat]} gap-4 sm:gap-6">`;
 
       grouped[cat].forEach((item, i) => {
-        const featured = item.name.includes('Classic Kenkey') ? ' featured' : '';
+        const featured = item.name.includes('Box of Kenkey') ? ' featured' : '';
         const inCart = cart.find((c) => c.id === item.id);
         const cartQty = inCart ? inCart.quantity : 0;
         const stock = item.stock;
@@ -379,11 +387,8 @@
   }
 
   function getDeliveryFee(orderType) {
-    if (orderType !== 'delivery') return 0;
-    const sub = getSubtotal();
-    const threshold = parseFloat(getSetting('free_delivery_threshold', C.FREE_DELIVERY_THRESHOLD));
-    const fee = parseFloat(getSetting('delivery_fee', C.DELIVERY_FEE));
-    return sub >= threshold ? 0 : fee;
+    // Shipping fees quoted individually by state — not added at checkout
+    return 0;
   }
 
   function getTotal(orderType) {
@@ -394,10 +399,9 @@
     let count = 0;
     cart.forEach((c) => {
       const name = c.name.toLowerCase();
-      if (name.includes('kenkey')) {
-        if (name.includes('extra kenkey') || name.includes('1 piece')) count += c.quantity;
-        else count += c.quantity * 2; // main plates include 2 kenkey
-      }
+      if (name.includes('box of kenkey') || name.includes('10 ball')) count += c.quantity * 10;
+      else if (name.includes('1 ball') || name.includes('extra kenkey') || name.includes('1 piece')) count += c.quantity;
+      else if (name.includes('kenkey')) count += c.quantity * 2;
     });
     return count;
   }
@@ -458,7 +462,7 @@
     const totalEl = document.getElementById('cart-total');
     const fee = getDeliveryFee(orderType);
     if (deliveryRow) deliveryRow.classList.toggle('hidden', orderType !== 'delivery');
-    if (deliveryEl) deliveryEl.textContent = fee === 0 ? 'FREE' : '$' + fee.toFixed(2);
+    if (deliveryEl) deliveryEl.textContent = orderType === 'delivery' ? 'Quoted at confirmation' : '$0.00';
     const newTotal = getTotal(orderType);
     if (totalEl) {
       totalEl.textContent = '$' + newTotal.toFixed(2);
@@ -557,7 +561,7 @@
     if (!cart.length) errors.push('Your cart is empty — add menu items first');
     if (!pickup) errors.push('Pickup/delivery date & time is required');
     if (new Date(pickup) <= new Date()) errors.push('Date must be in the future');
-    if (orderType === 'delivery' && !address) errors.push('Delivery address is required');
+    if (orderType === 'delivery' && !address) errors.push('Shipping address is required');
     if (orderType === 'delivery' && address) {
       const zipCheck = validateDeliveryZip(address);
       if (!zipCheck.ok) errors.push(zipCheck.msg);
@@ -701,7 +705,7 @@
 
     let msg = `🍽️ *Order Confirmation – Chef by Birth*\n\n`;
     msg += `Order #${shortId}\n👤 ${name}\n📱 ${phone}\n`;
-    msg += `${orderType === 'delivery' ? '🚚 Delivery' : '🏪 Pickup'}: ${pickupFmt}\n`;
+    msg += `${orderType === 'delivery' ? '📦 Shipping' : '🏪 Pickup (Whitehall, PA)'}: ${pickupFmt}\n`;
     msg += `🌶️ Spice: ${spiceLevel || 'medium'}\n\n`;
     items.forEach((i) => { msg += `• ${i.quantity}x ${i.name}\n`; });
     msg += `\n💰 Total: $${total.toFixed(2)}\n\nThank you!`;
