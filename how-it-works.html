@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="How It Works – Order, prepare, pickup or delivery">
+  <meta name="theme-color" content="#2D6A4F">
+  <title>How It Works – Chef by Birth</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/hero-kenkey.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D6A4F'/><text y='.9em' x='50%25' text-anchor='middle' font-size='70'>🍲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#D97A2B', 'primary-dark': '#B8631F', secondary: '#2D6A4F', 'secondary-dark': '#1B4332', cream: '#FEFAE0', accent: '#E9C46A', 'accent-dark': '#D4A843' }, fontFamily: { display: ['"Playfair Display"', 'Georgia', 'serif'], body: ['Inter', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="how-it-works" class="font-body bg-cream text-gray-800 antialiased">
+  <div id="layout-header"></div>
+  <div id="layout-overlays"></div>
+  <main class="page-main">
+<section id="how-it-works" class="py-20 bg-secondary text-white overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4 text-center">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl mb-12 reveal">How It Works</h2>
+        <div class="relative">
+          <div class="steps-connector" aria-hidden="true"><div class="steps-connector-fill" id="steps-fill"></div></div>
+          <ol class="grid md:grid-cols-3 gap-8 relative">
+            <li class="step-item reveal stagger-1"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">1</div><h3 class="font-bold text-lg mb-2">Add to Cart &amp; Checkout</h3><p class="text-white/80 text-sm">Select items, choose pickup or delivery, and submit your order online.</p></li>
+            <li class="step-item reveal stagger-2"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">2</div><h3 class="font-bold text-lg mb-2">We Prepare Fresh</h3><p class="text-white/80 text-sm">24-hour notice required for orders over 10 kenkey pieces.</p></li>
+            <li class="step-item reveal stagger-3"><div class="step-number w-14 h-14 rounded-full flex items-center justify-center font-display font-bold text-xl mx-auto mb-4 text-secondary-dark">3</div><h3 class="font-bold text-lg mb-2">Pick Up or Delivery</h3><p class="text-white/80 text-sm">Within 20 miles. $5 delivery fee or free over $40.</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="layout-footer"></div>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/layout.js"></script>
+  <script>SiteLayout.init();</script>
+  <script src="/js/customer.js"></script>
+  <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {})); }</script>
+</body>
+</html>

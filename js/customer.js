@@ -880,7 +880,7 @@
     });
     document.getElementById('cart-close')?.addEventListener('click', closeCart);
     document.getElementById('cart-backdrop')?.addEventListener('click', closeCart);
-    document.getElementById('cart-checkout-btn')?.addEventListener('click', closeCart);
+    document.getElementById('cart-checkout-btn')?.addEventListener('click', () => closeCart());
   }
 
   // ─── Scroll reveal & parallax ────────────────────────────────────
@@ -933,38 +933,16 @@
 
   function initScrollEffects() {
     const header = document.getElementById('site-header');
-    const floatBtn = document.getElementById('floating-order-btn');
     const heroImg = document.querySelector('.hero-bg-image');
-    const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const sections = ['about', 'kenkey', 'menu', 'how-it-works', 'reviews', 'hours', 'gallery', 'catering', 'track-order', 'order', 'faq', 'contact'];
+    const hero = document.getElementById('hero');
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let floatPulseDone = false;
 
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
       header?.classList.toggle('scrolled', scrollY > 60);
-
-      const hero = document.getElementById('hero');
-      if (floatBtn && hero) {
-        const show = scrollY > hero.offsetHeight - 120;
-        floatBtn.classList.toggle('hidden-scroll', !show);
-        if (show && !floatPulseDone) {
-          floatBtn.classList.add('pulse-once');
-          floatPulseDone = true;
-        }
-      }
-
       if (heroImg && hero && !prefersReduced && scrollY < hero.offsetHeight) {
         heroImg.style.transform = `scale(1.1) translateY(${scrollY * 0.32}px)`;
       }
-
-      const scrollPos = scrollY + (header?.offsetHeight || 80) + 100;
-      let current = '';
-      sections.forEach((id) => {
-        const el = document.getElementById(id);
-        if (el && el.offsetTop <= scrollPos) current = id;
-      });
-      navLinks.forEach((link) => link.classList.toggle('active', link.dataset.section === current));
     }, { passive: true });
 
     document.querySelectorAll('.hero-enter').forEach((el, i) => {
@@ -972,26 +950,45 @@
     });
   }
 
+  function getPage() {
+    return document.body.dataset.page || 'home';
+  }
+
   // ─── Boot ────────────────────────────────────────────────────────
   async function init() {
+    const page = getPage();
+
     loadCartFromStorage();
     updateCartUI();
     initMobileMenu();
-    initCartToggle();
-    initMenuFilters();
-    initMenuSearch();
+    if (document.body.dataset.cart === 'true') initCartToggle();
     initAnnouncement();
-    initCateringForm();
     initRevealObserver();
-    initSmoothScroll();
-    initScrollEffects();
-    toggleDeliveryFields();
 
-    document.querySelectorAll('input[name="order-type"]').forEach((r) => {
-      r.addEventListener('change', toggleDeliveryFields);
-    });
+    if (page === 'home') initScrollEffects();
+    else initSmoothScroll();
 
-    document.getElementById('order-form')?.addEventListener('submit', submitOrder);
+    if (document.getElementById('menu-container') || document.getElementById('menu-loading')) {
+      initMenuFilters();
+      initMenuSearch();
+    }
+
+    if (document.getElementById('catering-form')) initCateringForm();
+
+    const orderForm = document.getElementById('order-form');
+    if (orderForm) {
+      toggleDeliveryFields();
+      document.querySelectorAll('input[name="order-type"]').forEach((r) => {
+        r.addEventListener('change', toggleDeliveryFields);
+      });
+      orderForm.addEventListener('submit', submitOrder);
+      const pickupInput = document.getElementById('pickup-time');
+      if (pickupInput) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        pickupInput.min = now.toISOString().slice(0, 16);
+      }
+    }
 
     document.getElementById('track-token-btn')?.addEventListener('click', () => {
       const token = document.getElementById('track-token-input')?.value.trim();
@@ -1002,26 +999,28 @@
       fetchAndShowTracking(token);
     });
 
-    const pickupInput = document.getElementById('pickup-time');
-    if (pickupInput) {
-      const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      pickupInput.min = now.toISOString().slice(0, 16);
-    }
-
     if (!initSupabase()) return;
 
-    await Promise.all([loadSettings(), loadMenu()]);
-    subscribeMenuRealtime();
+    await loadSettings();
 
-    const saved = JSON.parse(localStorage.getItem('cbb_active_order') || 'null');
-    if (saved?.tracking_token) {
-      subscribeOrderTracking(saved.tracking_token);
-      startOrderPolling(saved.tracking_token);
-      fetchAndShowTracking(saved.tracking_token);
+    if (page === 'menu') {
+      await loadMenu();
+      subscribeMenuRealtime();
     }
 
-    setInterval(updateLiveStatus, 60000);
+    if (page === 'order' || page === 'track') {
+      const saved = JSON.parse(localStorage.getItem('cbb_active_order') || 'null');
+      if (saved?.tracking_token) {
+        subscribeOrderTracking(saved.tracking_token);
+        startOrderPolling(saved.tracking_token);
+        fetchAndShowTracking(saved.tracking_token);
+      }
+    }
+
+    if (document.getElementById('live-status')) {
+      updateLiveStatus();
+      setInterval(updateLiveStatus, 60000);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', init);

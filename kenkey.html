@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="What is Kenkey – Ghanaian fermented corn staple">
+  <meta name="theme-color" content="#2D6A4F">
+  <title>What is Kenkey – Chef by Birth</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/hero-kenkey.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D6A4F'/><text y='.9em' x='50%25' text-anchor='middle' font-size='70'>🍲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#D97A2B', 'primary-dark': '#B8631F', secondary: '#2D6A4F', 'secondary-dark': '#1B4332', cream: '#FEFAE0', accent: '#E9C46A', 'accent-dark': '#D4A843' }, fontFamily: { display: ['"Playfair Display"', 'Georgia', 'serif'], body: ['Inter', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="kenkey" class="font-body bg-cream text-gray-800 antialiased">
+  <div id="layout-header"></div>
+  <div id="layout-overlays"></div>
+  <main class="page-main">
+<section id="kenkey" class="py-20 md:py-28 bg-secondary text-white overflow-hidden">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="reveal reveal-left">
+            <span class="text-accent font-semibold uppercase text-sm tracking-wider">Ghanaian Staple</span>
+            <h2 class="font-display font-bold text-3xl sm:text-4xl mt-3 mb-6">What is Kenkey?</h2>
+            <p class="text-white/90 text-lg leading-relaxed mb-4">Kenkey (also called <em>komi</em> or <em>dokon</em>) is a fermented corn dough staple from Ghana. Corn is soaked, ground, partially cooked, then fermented for days until it develops its signature tangy flavor.</p>
+            <p class="text-white/80 leading-relaxed mb-6">The dough is wrapped in corn husks or plantain leaves and steamed into firm balls. It's traditionally eaten with fried fish, pepper sauce (shito), and fresh vegetables — a complete, satisfying meal rooted in West African home cooking.</p>
+            <ul class="space-y-3 text-sm">
+              <li class="flex items-start gap-3"><span class="text-accent mt-0.5"><i class="fa-solid fa-check"></i></span><span><strong>3-day fermentation</strong> — develops authentic sour tang</span></li>
+              <li class="flex items-start gap-3"><span class="text-accent mt-0.5"><i class="fa-solid fa-check"></i></span><span><strong>Leaf-wrapped</strong> — steamed in corn husks for aroma</span></li>
+              <li class="flex items-start gap-3"><span class="text-accent mt-0.5"><i class="fa-solid fa-check"></i></span><span><strong>Gluten-free</strong> — made from corn, naturally wheat-free</span></li>
+            </ul>
+          </div>
+          <div class="reveal reveal-right grid grid-cols-2 gap-4">
+            <div class="kenkey-fact bg-white/10 rounded-2xl p-5 backdrop-blur border border-white/10">
+              <p class="text-accent text-3xl font-display font-bold mb-1">🇬🇭</p>
+              <p class="font-semibold">Origin: Ghana</p>
+              <p class="text-white/70 text-xs mt-1">Coastal Ga &amp; Fante communities</p>
+            </div>
+            <div class="kenkey-fact bg-white/10 rounded-2xl p-5 backdrop-blur border border-white/10 mt-8">
+              <p class="text-accent text-3xl font-display font-bold mb-1">🌽</p>
+              <p class="font-semibold">Corn-based</p>
+              <p class="text-white/70 text-xs mt-1">Soaked, ground &amp; fermented</p>
+            </div>
+            <div class="kenkey-fact bg-white/10 rounded-2xl p-5 backdrop-blur border border-white/10">
+              <p class="text-accent text-3xl font-display font-bold mb-1">🐟</p>
+              <p class="font-semibold">Best with fish</p>
+              <p class="text-white/70 text-xs mt-1">Fried fish + shito + veggies</p>
+            </div>
+            <div class="kenkey-fact bg-white/10 rounded-2xl p-5 backdrop-blur border border-white/10 mt-8">
+              <p class="text-accent text-3xl font-display font-bold mb-1">🔥</p>
+              <p class="font-semibold">Spicy shito</p>
+              <p class="text-white/70 text-xs mt-1">Our family pepper sauce recipe</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="layout-footer"></div>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/layout.js"></script>
+  <script>SiteLayout.init();</script>
+  <script src="/js/customer.js"></script>
+  <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {})); }</script>
+</body>
+</html>

@@ -347,3 +347,27 @@ body.has-announcement .ticker-wrap { top: calc(4rem + 2.5rem); }
   body.has-announcement .ticker-wrap { top: calc(5rem + 2.5rem); }
 }
 body.has-announcement main { padding-top: 2.5rem; }
+
+/* ── Multi-page layout ── */
+body.page-home {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+body.page-home .page-main {
+  padding-top: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+body:not(.page-home) .page-main {
+  padding-top: 7rem;
+}
+@media (min-width: 768px) {
+  body:not(.page-home) .page-main { padding-top: 8rem; }
+}
+body.has-announcement:not(.page-home) .page-main {
+  padding-top: 9.5rem;
+}
+@media (min-width: 768px) {
+  body.has-announcement:not(.page-home) .page-main { padding-top: 10.5rem; }
+}

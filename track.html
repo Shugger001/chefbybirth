@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track Your Order – Real-time status updates">
+  <meta name="theme-color" content="#2D6A4F">
+  <title>Track Order – Chef by Birth</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/hero-kenkey.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D6A4F'/><text y='.9em' x='50%25' text-anchor='middle' font-size='70'>🍲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#D97A2B', 'primary-dark': '#B8631F', secondary: '#2D6A4F', 'secondary-dark': '#1B4332', cream: '#FEFAE0', accent: '#E9C46A', 'accent-dark': '#D4A843' }, fontFamily: { display: ['"Playfair Display"', 'Georgia', 'serif'], body: ['Inter', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="track" class="font-body bg-cream text-gray-800 antialiased">
+  <div id="layout-header"></div>
+  <div id="layout-overlays"></div>
+  <main class="page-main">
+<section id="track-order" class="py-16 md:py-20 bg-white border-y border-gray-100">
+      <div class="max-w-2xl mx-auto px-4">
+        <div class="text-center mb-8 reveal">
+          <h2 class="font-display font-bold text-3xl text-secondary mb-3">Track Your Order</h2>
+          <p class="text-gray-600 text-sm">Status updates in real time after checkout</p>
+        </div>
+        <div id="tracking-empty" class="reveal text-center py-8 text-gray-500 text-sm">
+          <i class="fa-solid fa-receipt text-3xl text-gray-300 mb-3 block"></i>
+          Place an order to track its progress here.
+        </div>
+        <div id="tracking-panel" class="hidden reveal">
+          <p class="text-center text-sm text-gray-500 mb-6">Order <strong id="tracking-order-id" class="text-primary font-mono"></strong></p>
+          <ol class="tracking-stepper" aria-label="Order status">
+            <li class="tracking-step" data-step="pending">
+              <div class="tracking-step-icon"><i class="fa-solid fa-clock"></i></div>
+              <div class="tracking-step-label"><strong>Pending</strong><span>Order received</span></div>
+            </li>
+            <li class="tracking-step" data-step="confirmed">
+              <div class="tracking-step-icon"><i class="fa-solid fa-check"></i></div>
+              <div class="tracking-step-label"><strong>Confirmed</strong><span>Kitchen accepted</span></div>
+            </li>
+            <li class="tracking-step" data-step="ready">
+              <div class="tracking-step-icon"><i class="fa-solid fa-bell"></i></div>
+              <div class="tracking-step-label"><strong>Ready</strong><span>Pickup / out for delivery</span></div>
+            </li>
+            <li class="tracking-step" data-step="completed">
+              <div class="tracking-step-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="tracking-step-label"><strong>Completed</strong><span>Enjoy your meal!</span></div>
+            </li>
+          </ol>
+          <p id="tracking-status-msg" class="text-center mt-6 text-sm font-semibold text-secondary"></p>
+        </div>
+        <div class="mt-6 reveal">
+          <label for="track-token-input" class="block text-sm font-semibold text-gray-600 mb-2 text-center">Have a tracking token?</label>
+          <div class="flex gap-2 max-w-md mx-auto">
+            <input type="text" id="track-token-input" placeholder="Paste tracking token" class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
+            <button type="button" id="track-token-btn" class="bg-secondary hover:bg-secondary-dark text-white font-semibold px-4 py-2.5 rounded-xl text-sm">Track</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="layout-footer"></div>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/layout.js"></script>
+  <script>SiteLayout.init();</script>
+  <script src="/js/customer.js"></script>
+  <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {})); }</script>
+</body>
+</html>

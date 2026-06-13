@@ -1,9 +1,22 @@
-const CACHE = 'chefbybirth-v1';
+const CACHE = 'chefbybirth-v2';
 const ASSETS = [
   '/',
   '/index.html',
+  '/about.html',
+  '/menu.html',
+  '/order.html',
+  '/how-it-works.html',
+  '/hours.html',
+  '/contact.html',
+  '/kenkey.html',
+  '/gallery.html',
+  '/catering.html',
+  '/reviews.html',
+  '/faq.html',
+  '/track.html',
   '/css/styles.css',
   '/js/customer.js',
+  '/js/layout.js',
   '/config.js',
   '/assets/hero-kenkey.png',
   '/manifest.json',

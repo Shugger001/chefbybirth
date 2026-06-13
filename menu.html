@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Menu – Order authentic Ghanaian kenkey online">
+  <meta name="theme-color" content="#2D6A4F">
+  <title>Our Menu – Chef by Birth</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/hero-kenkey.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232D6A4F'/><text y='.9em' x='50%25' text-anchor='middle' font-size='70'>🍲</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary: '#D97A2B', 'primary-dark': '#B8631F', secondary: '#2D6A4F', 'secondary-dark': '#1B4332', cream: '#FEFAE0', accent: '#E9C46A', 'accent-dark': '#D4A843' }, fontFamily: { display: ['"Playfair Display"', 'Georgia', 'serif'], body: ['Inter', 'system-ui', 'sans-serif'] } } } };
+  </script>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-page="menu" data-cart="true" class="font-body bg-cream text-gray-800 antialiased">
+  <div id="layout-header"></div>
+  <div id="layout-overlays"></div>
+  <main class="page-main">
+<section id="menu" class="py-20 md:py-28 bg-cream">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 reveal">
+          <span class="text-primary font-semibold uppercase text-sm tracking-wider">What We Serve</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mt-3 mb-4">Our Menu</h2>
+          <p class="text-gray-600">Live menu — updates instantly when items sell out</p>
+        </div>
+
+        <!-- Today's special (settings-driven) -->
+        <div id="featured-special" class="hidden reveal mb-8 max-w-2xl mx-auto">
+          <div class="featured-special-card bg-gradient-to-r from-secondary to-secondary-dark text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-xl border border-accent/20">
+            <div class="text-5xl" aria-hidden="true">⭐</div>
+            <div class="flex-1 text-center sm:text-left">
+              <p class="text-accent text-xs font-bold uppercase tracking-widest mb-1">Today's Special</p>
+              <h3 id="featured-name" class="font-display text-xl sm:text-2xl font-bold"></h3>
+              <p id="featured-desc" class="text-white/80 text-sm mt-1"></p>
+              <p id="featured-price" class="text-accent font-bold text-lg mt-2"></p>
+            </div>
+            <button type="button" id="featured-add-btn" class="btn-primary bg-accent hover:bg-accent-dark text-secondary-dark font-bold px-6 py-3 rounded-full whitespace-nowrap">
+              <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <div class="max-w-md mx-auto mb-6 reveal">
+          <label for="menu-search" class="sr-only">Search menu</label>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="search" id="menu-search" placeholder="Search menu…" class="w-full pl-11 pr-4 py-3 rounded-full border border-gray-200 bg-white shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2 mb-10 reveal" role="tablist">
+          <button type="button" class="menu-filter-btn active px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="all">All</button>
+          <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="main">Main Plates</button>
+          <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="side">Extra Sides</button>
+          <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="drink">Drinks</button>
+        </div>
+        <div id="menu-loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 py-8">
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52 hidden sm:block"></div>
+        </div>
+        <p id="menu-no-results" class="hidden text-center text-gray-500 py-12">No items match your search.</p>
+        <div id="menu-container" class="hidden"></div>
+      </div>
+    </section>
+  </main>
+  <div id="layout-footer"></div>
+  <script src="/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/layout.js"></script>
+  <script>SiteLayout.init();</script>
+  <script src="/js/customer.js"></script>
+  <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {})); }</script>
+</body>
+</html>
