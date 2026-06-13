@@ -17,12 +17,12 @@ WHERE name NOT IN (
 
 INSERT INTO menu_items (name, description, price, category, is_available, image_url) VALUES
   ('1 Ball of Kenkey', 'Single ball of traditional fermented kenkey', 5.00, 'kenkey', true, '/assets/hero-kenkey.png'),
-  ('Box of Kenkey (10 balls)', 'Full box — 10 balls of fermented kenkey', 50.00, 'kenkey', true, '/assets/hero-kenkey.png'),
-  ('Chofi (6 pieces)', 'Six pieces of chofi — we don''t do fish', 30.00, 'proteins', true, '/assets/hero-kenkey.png'),
-  ('Turkey Wings (6 pieces)', 'Six seasoned turkey wings', 30.00, 'proteins', true, '/assets/hero-kenkey.png'),
-  ('Shito — Small', 'Homemade shito — small size', 30.00, 'shito', true, '/assets/hero-kenkey.png'),
-  ('Shito — Medium', 'Homemade shito — medium size', 50.00, 'shito', true, '/assets/hero-kenkey.png'),
-  ('Shito — Large', 'Homemade shito — large size', 100.00, 'shito', true, '/assets/hero-kenkey.png')
+  ('Box of Kenkey (10 balls)', 'Full box — 10 balls of fermented kenkey', 50.00, 'kenkey', true, '/assets/menu-kenkey-box.png'),
+  ('Chofi (6 pieces)', 'Six pieces of chofi — we don''t do fish', 30.00, 'proteins', true, '/assets/menu-chofi.png'),
+  ('Turkey Wings (6 pieces)', 'Six seasoned turkey wings', 30.00, 'proteins', true, '/assets/menu-turkey-wings.png'),
+  ('Shito — Small', 'Homemade shito — small size', 30.00, 'shito', true, '/assets/menu-shito.png'),
+  ('Shito — Medium', 'Homemade shito — medium size', 50.00, 'shito', true, '/assets/menu-shito.png'),
+  ('Shito — Large', 'Homemade shito — large size', 100.00, 'shito', true, '/assets/menu-shito.png')
 ON CONFLICT (name) DO UPDATE SET
   description = EXCLUDED.description,
   price = EXCLUDED.price,

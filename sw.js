@@ -1,10 +1,14 @@
-const CACHE = 'chefbybirth-v5';
+const CACHE = 'chefbybirth-v6';
 const ASSETS = [
   '/css/styles.css',
   '/js/customer.js',
   '/js/layout.js',
   '/config.js',
   '/assets/hero-kenkey.png',
+  '/assets/menu-kenkey-box.png',
+  '/assets/menu-chofi.png',
+  '/assets/menu-turkey-wings.png',
+  '/assets/menu-shito.png',
   '/manifest.json',
 ];
 

@@ -329,6 +329,12 @@ INSERT INTO menu_items (name, description, price, category, is_available) VALUES
   ('Shito — Large', 'Homemade shito — large size', 100.00, 'shito', true)
 ON CONFLICT (name) DO NOTHING;
 
+UPDATE menu_items SET image_url = '/assets/hero-kenkey.png' WHERE name = '1 Ball of Kenkey';
+UPDATE menu_items SET image_url = '/assets/menu-kenkey-box.png' WHERE name = 'Box of Kenkey (10 balls)';
+UPDATE menu_items SET image_url = '/assets/menu-chofi.png' WHERE name = 'Chofi (6 pieces)';
+UPDATE menu_items SET image_url = '/assets/menu-turkey-wings.png' WHERE name = 'Turkey Wings (6 pieces)';
+UPDATE menu_items SET image_url = '/assets/menu-shito.png' WHERE name LIKE 'Shito —%';
+
 -- =============================================================================
 -- SEED: Settings
 -- =============================================================================
