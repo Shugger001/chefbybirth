@@ -233,7 +233,7 @@
   }
 
   const MENU_CATEGORIES = ['kenkey', 'proteins', 'shito', 'drinks'];
-  const CATEGORY_LABELS = { kenkey: 'Kenkey', proteins: 'Proteins', shito: 'Shito', drinks: 'Drinks' };
+  const CATEGORY_LABELS = { kenkey: 'Kenkey Deals', proteins: 'Proteins', shito: 'Shito', drinks: 'Drinks' };
   const CATEGORY_ICONS = { kenkey: 'fa-bowl-food', proteins: 'fa-fish', shito: 'fa-pepper-hot', drinks: 'fa-glass-water' };
   const CATEGORY_GRID = { kenkey: 'lg:grid-cols-2', proteins: 'lg:grid-cols-3', shito: 'lg:grid-cols-3', drinks: 'lg:grid-cols-4' };
 
