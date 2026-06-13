@@ -1,30 +1,23 @@
-const CACHE = 'chefbybirth-v4';
+const CACHE = 'chefbybirth-v5';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/about.html',
-  '/menu.html',
-  '/order.html',
-  '/how-it-works.html',
-  '/hours.html',
-  '/contact.html',
-  '/kenkey.html',
-  '/gallery.html',
-  '/catering.html',
-  '/reviews.html',
-  '/faq.html',
-  '/track.html',
   '/css/styles.css',
   '/js/customer.js',
   '/js/layout.js',
   '/config.js',
   '/assets/hero-kenkey.png',
-  '/assets/price-list.png',
   '/manifest.json',
 ];
 
+function isHtmlRequest(url) {
+  return url.pathname === '/' ||
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('/');
+}
+
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
@@ -39,6 +32,23 @@ self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
+
+  // Always fetch HTML from network so menu/page updates appear immediately
+  if (isHtmlRequest(url)) {
+    e.respondWith(
+      fetch(e.request)
+        .then((res) => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then((c) => c.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(e.request).then((cached) =>
       cached || fetch(e.request).then((res) => {

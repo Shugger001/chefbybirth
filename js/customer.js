@@ -297,11 +297,12 @@
           ? (stock <= 10 ? `<span class="text-xs font-semibold text-orange-700 bg-orange-50 px-2 py-1 rounded-full">Only ${stock} left</span>` : '')
           : '';
         const outOfStock = stock !== null && stock <= 0;
-        const imgSrc = item.image_url || DEFAULT_MENU_IMAGE;
         html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal menu-pop" style="animation-delay:${i * 0.07}s" data-id="${item.id}">
-          <img src="${esc(imgSrc)}" alt="${esc(item.name)}" class="w-full h-36 object-cover rounded-xl mb-4" loading="lazy">
           <div class="flex justify-between items-start gap-3 mb-2">
-            <h4 class="font-display text-lg font-bold text-secondary">${esc(item.name)}</h4>
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="w-10 h-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary"><i class="fa-solid ${CATEGORY_ICONS[cat]}"></i></span>
+              <h4 class="font-display text-lg font-bold text-secondary leading-snug">${esc(item.name)}</h4>
+            </div>
             <span class="text-primary font-bold text-lg whitespace-nowrap">$${Number(item.price).toFixed(2)}</span>
           </div>
           ${featured ? '<span class="inline-block text-xs font-bold uppercase bg-primary/10 text-primary px-2 py-0.5 rounded-full mb-2">Most Popular</span>' : ''}
