@@ -874,21 +874,6 @@
     }
   }
 
-  function initMobileMenu() {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    if (!btn || !menu) return;
-    btn.addEventListener('click', () => {
-      const open = menu.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(open));
-      menu.setAttribute('aria-hidden', String(!open));
-    });
-    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => {
-      menu.classList.remove('open');
-      btn.setAttribute('aria-expanded', 'false');
-    }));
-  }
-
   function initCartToggle() {
     document.getElementById('cart-toggle')?.addEventListener('click', () => {
       const panel = document.getElementById('cart-panel');

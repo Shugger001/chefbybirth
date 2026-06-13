@@ -1,4 +1,4 @@
-const CACHE = 'chefbybirth-v2';
+const CACHE = 'chefbybirth-v3';
 const ASSETS = [
   '/',
   '/index.html',

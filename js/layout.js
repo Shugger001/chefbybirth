@@ -27,9 +27,10 @@
 
   function navLink(item, mobile) {
     const active = currentPage() === item.page;
-    const cls = mobile
-      ? `block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10${active ? ' bg-white/10 text-accent font-semibold' : ''}`
-      : `nav-link text-white/90 text-sm font-medium${active ? ' active text-accent' : ''}`;
+    if (mobile) {
+      return `<li><a href="${item.href}" class="mobile-nav-link${active ? ' active' : ''}"${active ? ' aria-current="page"' : ''}>${item.label}</a></li>`;
+    }
+    const cls = `nav-link text-white/90 text-sm font-medium${active ? ' active text-accent' : ''}`;
     return `<li><a href="${item.href}" class="${cls}">${item.label}</a></li>`;
   }
 
@@ -38,48 +39,85 @@
     const isHome = page === 'home';
     const showCart = document.body.dataset.cart === 'true';
     const navDesktop = NAV.map((n) => navLink(n, false)).join('');
-    const navMobile = NAV.map((n) => navLink(n, true)).join('')
-      + MORE_LINKS.map((n) => `<li><a href="${n.href}" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">${n.label}</a></li>`).join('');
+    const navMobilePrimary = NAV.map((n) => navLink(n, true)).join('');
+    const navMobileMore = MORE_LINKS.map((n) => {
+      const active = page === n.href.replace('/', '').replace('.html', '');
+      return `<li><a href="${n.href}" class="mobile-nav-link${active ? ' active' : ''}">${n.label}</a></li>`;
+    }).join('');
 
     return `
-    <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-secondary/90 backdrop-blur-md shadow-lg transition-all">
+    <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-secondary/90 backdrop-blur-md shadow-lg transition-all safe-top">
       <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="header-inner flex items-center justify-between h-16 md:h-20">
-          <a href="/" class="flex items-center gap-2 group">
-            <span class="text-accent text-2xl"><i class="fa-solid fa-bowl-food"></i></span>
-            <span class="font-display font-bold text-white text-lg sm:text-xl">Chef by Birth</span>
+        <div class="header-inner flex items-center justify-between h-14 sm:h-16 md:h-20">
+          <a href="/" class="flex items-center gap-2 group min-w-0">
+            <span class="text-accent text-xl sm:text-2xl shrink-0"><i class="fa-solid fa-bowl-food"></i></span>
+            <span class="font-display font-bold text-white text-base sm:text-lg md:text-xl truncate">Chef by Birth</span>
           </a>
           <ul class="hidden md:flex items-center gap-6" role="list">${navDesktop}</ul>
-          <div class="flex items-center gap-2 sm:gap-3">
-            <a href="/order.html" class="hidden sm:inline-flex btn-primary bg-accent hover:bg-accent-dark text-secondary-dark font-semibold text-sm px-4 py-2 rounded-full items-center gap-1.5">
+          <div class="flex items-center gap-1 sm:gap-2">
+            <a href="/order.html" class="md:hidden btn-primary bg-accent hover:bg-accent-dark text-secondary-dark font-semibold text-sm w-10 h-10 rounded-full inline-flex items-center justify-center shrink-0" aria-label="Order Now">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </a>
+            <a href="/order.html" class="hidden md:inline-flex btn-primary bg-accent hover:bg-accent-dark text-secondary-dark font-semibold text-sm px-4 py-2 rounded-full items-center gap-1.5">
               <i class="fa-solid fa-bag-shopping"></i> Order Now
             </a>
-            ${showCart ? `<button type="button" id="cart-toggle" class="relative text-white hover:text-accent transition-colors p-2" aria-label="Open cart">
+            ${showCart ? `<button type="button" id="cart-toggle" class="relative text-white hover:text-accent transition-colors p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center" aria-label="Open cart">
               <i class="fa-solid fa-cart-shopping text-xl"></i>
-              <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-accent text-secondary-dark text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+              <span id="cart-count" class="hidden absolute top-0.5 right-0.5 bg-accent text-secondary-dark text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
             </button>` : ''}
-            <button id="mobile-menu-btn" type="button" class="md:hidden text-white p-2" aria-label="Menu"><i class="fa-solid fa-bars text-xl"></i></button>
+            <button id="mobile-menu-btn" type="button" class="md:hidden text-white p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+              <span class="mobile-menu-icon" aria-hidden="true"><i class="fa-solid fa-bars text-xl"></i></span>
+            </button>
           </div>
-        </div>
-        <div id="mobile-menu" class="md:hidden pb-0 overflow-hidden max-h-0 opacity-0 transition-all" aria-hidden="true">
-          <ul class="flex flex-col gap-1 pb-4">${navMobile}
-            <li><a href="/order.html" class="block text-secondary-dark bg-accent py-2.5 px-3 rounded-lg font-semibold text-center mt-2">Order Now</a></li>
-          </ul>
         </div>
       </nav>
     </header>
-    ${isHome ? '' : `<div class="ticker-wrap fixed top-16 md:top-20 left-0 right-0 z-40 py-2" aria-hidden="true"><div class="ticker-track">
+    <div id="mobile-menu-backdrop" class="mobile-menu-backdrop md:hidden" aria-hidden="true"></div>
+    <aside id="mobile-menu" class="mobile-menu-panel md:hidden" aria-hidden="true" aria-label="Mobile navigation">
+      <div class="mobile-menu-header">
+        <span class="font-display font-bold text-white text-lg"><i class="fa-solid fa-bowl-food text-accent mr-2"></i>Menu</span>
+        <button type="button" id="mobile-menu-close" class="text-white/80 hover:text-white p-2 min-w-[44px] min-h-[44px] inline-flex items-center justify-center" aria-label="Close menu"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <nav class="mobile-menu-body">
+        <p class="mobile-menu-label">Main</p>
+        <ul class="mobile-menu-list">${navMobilePrimary}</ul>
+        <p class="mobile-menu-label">More</p>
+        <ul class="mobile-menu-list">${navMobileMore}</ul>
+        <a href="/order.html" class="mobile-menu-cta"><i class="fa-solid fa-bag-shopping mr-2"></i>Order Now</a>
+      </nav>
+    </aside>
+    ${isHome ? '' : `<div class="ticker-wrap fixed top-14 sm:top-16 md:top-20 left-0 right-0 z-40 py-2 safe-ticker" aria-hidden="true"><div class="ticker-track">
       <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-fire mr-2"></i>Fresh kenkey fermented 3 days</span>
       <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-truck mr-2"></i>Free delivery on orders over $40</span>
       <span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8"><i class="fa-solid fa-pepper-hot mr-2"></i>Homemade shito — family recipe</span>
     </div></div>`}`;
   }
 
+  function renderMobileBottomBar() {
+    const page = currentPage();
+    if (page === 'home') return '';
+    const items = [
+      { href: '/', label: 'Home', icon: 'fa-house', page: 'home' },
+      { href: '/menu.html', label: 'Menu', icon: 'fa-utensils', page: 'menu' },
+      { href: '/order.html', label: 'Order', icon: 'fa-bag-shopping', page: 'order' },
+      { href: '/hours.html', label: 'Hours', icon: 'fa-clock', page: 'hours' },
+      { href: '/contact.html', label: 'Contact', icon: 'fa-phone', page: 'contact' },
+    ];
+    return `<nav class="mobile-bottom-bar md:hidden safe-bottom" aria-label="Quick navigation">
+      ${items.map((item) => {
+        const active = page === item.page;
+        return `<a href="${item.href}" class="mobile-bottom-link${active ? ' active' : ''}"${active ? ' aria-current="page"' : ''}>
+          <i class="fa-solid ${item.icon}"></i><span>${item.label}</span>
+        </a>`;
+      }).join('')}
+    </nav>`;
+  }
+
   function renderOverlays(showCart) {
     return `
-    <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-2 max-w-sm" aria-live="polite"></div>
-    <div id="order-ready-banner" class="hidden fixed top-28 left-4 right-4 z-[90] bg-green-600 text-white text-center py-3 px-4 rounded-xl shadow-lg font-semibold text-sm sm:text-base">🎉 Your order is READY for pickup!</div>
-    <div id="site-announcement" class="hidden fixed top-16 md:top-20 left-0 right-0 z-[45] bg-primary text-white text-center py-2.5 px-10 text-sm font-medium shadow-md">
+    <div id="toast-container" class="toast-container fixed z-[100] flex flex-col gap-2 max-w-sm" aria-live="polite"></div>
+    <div id="order-ready-banner" class="hidden fixed left-4 right-4 z-[90] bg-green-600 text-white text-center py-3 px-4 rounded-xl shadow-lg font-semibold text-sm sm:text-base safe-banner">🎉 Your order is READY for pickup!</div>
+    <div id="site-announcement" class="hidden fixed left-0 right-0 z-[45] bg-primary text-white text-center py-2.5 px-10 text-sm font-medium shadow-md safe-announcement">
       <span id="announcement-text"></span>
       <button type="button" id="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-1" aria-label="Dismiss"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -141,6 +179,35 @@
     </footer>`;
   }
 
+  function initMobileNav() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('mobile-menu-close');
+    const menu = document.getElementById('mobile-menu');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    if (!btn || !menu) return;
+
+    const setOpen = (open) => {
+      menu.classList.toggle('open', open);
+      backdrop?.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      menu.setAttribute('aria-hidden', String(!open));
+      backdrop?.setAttribute('aria-hidden', String(!open));
+      document.body.classList.toggle('mobile-nav-open', open);
+      btn.querySelector('.mobile-menu-icon').innerHTML = open
+        ? '<i class="fa-solid fa-xmark text-xl"></i>'
+        : '<i class="fa-solid fa-bars text-xl"></i>';
+    };
+
+    btn.addEventListener('click', () => setOpen(!menu.classList.contains('open')));
+    closeBtn?.addEventListener('click', () => setOpen(false));
+    backdrop?.addEventListener('click', () => setOpen(false));
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.classList.contains('open')) setOpen(false);
+    });
+  }
+
   function init() {
     const showCart = document.body.dataset.cart === 'true';
     const page = currentPage();
@@ -151,16 +218,27 @@
     if (overlaysEl) overlaysEl.innerHTML = renderOverlays(showCart);
     if (footerEl && page !== 'home') footerEl.innerHTML = renderFooter();
 
+    const bottomBarEl = document.getElementById('layout-bottom-bar') || (() => {
+      const el = document.createElement('div');
+      el.id = 'layout-bottom-bar';
+      document.body.appendChild(el);
+      return el;
+    })();
+    bottomBarEl.innerHTML = renderMobileBottomBar();
+
+    initMobileNav();
+
     if (page !== 'home' && page !== 'order') {
       const float = document.createElement('a');
       float.href = '/order.html';
       float.id = 'floating-order-btn';
-      float.className = 'floating-btn fixed bottom-6 right-6 z-40 bg-accent text-secondary-dark font-bold px-5 py-3.5 rounded-full shadow-lg flex items-center gap-2';
+      float.className = 'floating-btn fixed z-40 bg-accent text-secondary-dark font-bold px-4 py-3.5 sm:px-5 rounded-full shadow-lg flex items-center gap-2 safe-float';
       float.innerHTML = '<i class="fa-solid fa-bag-shopping"></i><span class="hidden sm:inline">Order Now</span>';
       document.body.appendChild(float);
     }
 
     document.body.classList.toggle('page-home', page === 'home');
+    document.body.classList.toggle('has-mobile-bar', page !== 'home');
   }
 
   window.SiteLayout = { init, currentPage };
