@@ -1,4 +1,4 @@
-const CACHE = 'chefbybirth-v6';
+const CACHE = 'chefbybirth-v7';
 const ASSETS = [
   '/css/styles.css',
   '/js/customer.js',

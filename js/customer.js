@@ -22,9 +22,9 @@
     'box of kenkey (10 balls)': '/assets/menu-kenkey-box.png',
     'chofi (6 pieces)': '/assets/menu-chofi.png',
     'turkey wings (6 pieces)': '/assets/menu-turkey-wings.png',
-    'shito — small': '/assets/menu-shito.png',
-    'shito — medium': '/assets/menu-shito.png',
-    'shito — large': '/assets/menu-shito.png',
+    'shito - small': '/assets/menu-shito.png',
+    'shito - medium': '/assets/menu-shito.png',
+    'shito - large': '/assets/menu-shito.png',
   };
   const CATEGORY_IMAGES = {
     kenkey: '/assets/hero-kenkey.png',
@@ -33,11 +33,20 @@
     drinks: '/assets/hero-kenkey.png',
   };
 
+  const GENERIC_MENU_IMAGE = '/assets/hero-kenkey.png';
+
+  function menuItemKey(name) {
+    return (name || '').toLowerCase().replace(/\u2014/g, '-').replace(/\s+/g, ' ').trim();
+  }
+
   function getMenuImage(item, cat) {
+    const key = menuItemKey(item.name);
+    if (MENU_ITEM_IMAGES[key]) return MENU_ITEM_IMAGES[key];
+
     const url = item.image_url?.trim();
-    if (url) return url;
-    const key = (item.name || '').toLowerCase();
-    return MENU_ITEM_IMAGES[key] || CATEGORY_IMAGES[cat] || DEFAULT_MENU_IMAGE;
+    if (url && url !== GENERIC_MENU_IMAGE) return url;
+
+    return CATEGORY_IMAGES[cat] || DEFAULT_MENU_IMAGE;
   }
 
   // ─── Supabase Init ───────────────────────────────────────────────
@@ -322,7 +331,7 @@
         const imgSrc = getMenuImage(item, cat);
         html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal menu-pop overflow-hidden" style="animation-delay:${i * 0.07}s" data-id="${item.id}">
           <div class="menu-card-image-wrap -mx-5 -mt-5 sm:-mx-6 sm:-mt-6 mb-4">
-            <img src="${esc(imgSrc)}" alt="${esc(item.name)}" class="menu-card-image w-full h-44 sm:h-48 object-cover" loading="lazy">
+            <img src="${esc(imgSrc)}" alt="${esc(item.name)}" class="menu-card-image w-full h-44 sm:h-48 object-cover bg-cream" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${esc(CATEGORY_IMAGES[cat] || DEFAULT_MENU_IMAGE)}'">
           </div>
           <div class="flex justify-between items-start gap-3 mb-2">
             <h4 class="font-display text-lg font-bold text-secondary leading-snug">${esc(item.name)}</h4>
