@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
   name          TEXT NOT NULL UNIQUE,
   description   TEXT,
   price         DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-  category      TEXT NOT NULL CHECK (category IN ('main', 'side', 'drink')),
+  category      TEXT NOT NULL CHECK (category IN ('kenkey', 'proteins', 'shito', 'drinks')),
   is_available  BOOLEAN NOT NULL DEFAULT true,
   image_url     TEXT,
   stock         INTEGER, -- reserved for future use; NULL = unlimited
@@ -320,19 +320,19 @@ ALTER PUBLICATION supabase_realtime ADD TABLE order_tracking;
 -- =============================================================================
 
 INSERT INTO menu_items (name, description, price, category, is_available) VALUES
-  ('Classic Kenkey & Fried Fish', 'Two kenkey balls + whole crispy fried fish + shito + fresh vegetables', 12.99, 'main', true),
-  ('Kenkey with Grilled Tilapia', 'Grilled tilapia (Ghanaian spices) + two kenkey + shito + onions & tomatoes', 15.99, 'main', true),
-  ('Vegetarian Kenkey Plate', 'Two kenkey + shito + avocado + boiled eggs + fresh salad', 10.99, 'main', true),
-  ('Kenkey & Chicken Stew', 'Two kenkey + rich Ghanaian tomato stew with chicken', 13.99, 'main', true),
-  ('Extra Kenkey (1 piece)', 'One additional kenkey ball', 2.50, 'side', true),
-  ('Shito (2oz)', 'Homemade spicy black pepper sauce', 1.50, 'side', true),
-  ('Fried Fish (single)', 'Single crispy fried fish', 5.00, 'side', true),
-  ('Grilled Tilapia (whole)', 'Whole grilled tilapia with Ghanaian spices', 8.00, 'side', true),
-  ('Boiled Eggs (2)', 'Two boiled eggs', 2.00, 'side', true),
-  ('Sobolo (Hibiscus)', 'Traditional hibiscus drink', 3.50, 'drink', true),
-  ('Asana (Millet)', 'Fermented millet drink', 3.50, 'drink', true),
-  ('Malta Guinness', 'Malta Guinness bottled drink', 3.00, 'drink', true),
-  ('Canned Soda', 'Assorted canned soda', 1.50, 'drink', true)
+  ('Classic Kenkey & Fried Fish', 'Two kenkey balls + whole crispy fried fish + shito + fresh vegetables', 12.99, 'kenkey', true),
+  ('Kenkey with Grilled Tilapia', 'Grilled tilapia (Ghanaian spices) + two kenkey + shito + onions & tomatoes', 15.99, 'kenkey', true),
+  ('Vegetarian Kenkey Plate', 'Two kenkey + shito + avocado + boiled eggs + fresh salad', 10.99, 'kenkey', true),
+  ('Kenkey & Chicken Stew', 'Two kenkey + rich Ghanaian tomato stew with chicken', 13.99, 'kenkey', true),
+  ('Extra Kenkey (1 piece)', 'One additional kenkey ball', 2.50, 'kenkey', true),
+  ('Shito (2oz)', 'Homemade spicy black pepper sauce', 1.50, 'shito', true),
+  ('Fried Fish (single)', 'Single crispy fried fish', 5.00, 'proteins', true),
+  ('Grilled Tilapia (whole)', 'Whole grilled tilapia with Ghanaian spices', 8.00, 'proteins', true),
+  ('Boiled Eggs (2)', 'Two boiled eggs', 2.00, 'proteins', true),
+  ('Sobolo (Hibiscus)', 'Traditional hibiscus drink', 3.50, 'drinks', true),
+  ('Asana (Millet)', 'Fermented millet drink', 3.50, 'drinks', true),
+  ('Malta Guinness', 'Malta Guinness bottled drink', 3.00, 'drinks', true),
+  ('Canned Soda', 'Assorted canned soda', 1.50, 'drinks', true)
 ON CONFLICT (name) DO NOTHING;
 
 -- =============================================================================

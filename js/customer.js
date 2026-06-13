@@ -232,8 +232,24 @@
     if (noResults) noResults.classList.add('hidden');
   }
 
-  const CATEGORY_LABELS = { main: 'Main Plates', side: 'Extra Sides', drink: 'Drinks' };
-  const CATEGORY_ICONS = { main: 'fa-plate-wheat', side: 'fa-plus', drink: 'fa-glass-water' };
+  const MENU_CATEGORIES = ['kenkey', 'proteins', 'shito', 'drinks'];
+  const CATEGORY_LABELS = { kenkey: 'Kenkey', proteins: 'Proteins', shito: 'Shito', drinks: 'Drinks' };
+  const CATEGORY_ICONS = { kenkey: 'fa-bowl-food', proteins: 'fa-fish', shito: 'fa-pepper-hot', drinks: 'fa-glass-water' };
+  const CATEGORY_GRID = { kenkey: 'lg:grid-cols-2', proteins: 'lg:grid-cols-3', shito: 'lg:grid-cols-3', drinks: 'lg:grid-cols-4' };
+
+  function normalizeCategory(item) {
+    const cat = item.category;
+    const name = (item.name || '').toLowerCase();
+    if (MENU_CATEGORIES.includes(cat)) return cat;
+    if (cat === 'drink') return 'drinks';
+    if (cat === 'main') return 'kenkey';
+    if (cat === 'side') {
+      if (name.includes('shito')) return 'shito';
+      if (name.includes('kenkey')) return 'kenkey';
+      return 'proteins';
+    }
+    return cat;
+  }
 
   function renderMenu(filter = menuFilter) {
     menuFilter = filter;
@@ -242,26 +258,27 @@
     if (!container) return;
 
     const q = menuSearch.trim().toLowerCase();
-    const grouped = { main: [], side: [], drink: [] };
+    const grouped = Object.fromEntries(MENU_CATEGORIES.map((c) => [c, []]));
     menuItems.forEach((item) => {
-      if (filter !== 'all' && item.category !== filter) return;
+      const cat = normalizeCategory(item);
+      if (filter !== 'all' && cat !== filter) return;
       if (q && !item.name.toLowerCase().includes(q) && !(item.description || '').toLowerCase().includes(q)) return;
-      grouped[item.category]?.push(item);
+      grouped[cat]?.push(item);
     });
 
-    const total = grouped.main.length + grouped.side.length + grouped.drink.length;
+    const total = MENU_CATEGORIES.reduce((n, c) => n + grouped[c].length, 0);
     if (noResults) noResults.classList.toggle('hidden', total > 0 || !q);
     container.classList.toggle('hidden', total === 0);
 
     let html = '';
-    ['main', 'side', 'drink'].forEach((cat) => {
+    MENU_CATEGORIES.forEach((cat) => {
       if (!grouped[cat].length) return;
       if (filter !== 'all' && filter !== cat) return;
       html += `<div class="menu-group mb-12" data-category="${cat}">
         <h3 class="font-display text-2xl font-bold text-secondary mb-6 flex items-center gap-2">
           <i class="fa-solid ${CATEGORY_ICONS[cat]} text-primary"></i> ${CATEGORY_LABELS[cat]}
         </h3>
-        <div class="grid sm:grid-cols-2 ${cat === 'main' ? 'lg:grid-cols-2' : cat === 'side' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-4 sm:gap-6">`;
+        <div class="grid sm:grid-cols-2 ${CATEGORY_GRID[cat]} gap-4 sm:gap-6">`;
 
       grouped[cat].forEach((item, i) => {
         const featured = item.name.includes('Classic Kenkey') ? ' featured' : '';
