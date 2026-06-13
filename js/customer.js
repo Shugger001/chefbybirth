@@ -12,6 +12,11 @@
   let cart = [];
   let menuChannel = null;
   let trackingChannel = null;
+  let menuFilter = 'all';
+  let menuSearch = '';
+  const CART_STORAGE_KEY = 'cbb_cart';
+  const ANNOUNCEMENT_KEY = 'cbb_ann_dismiss';
+  const DEFAULT_MENU_IMAGE = '/assets/hero-kenkey.png';
 
   // ─── Supabase Init ───────────────────────────────────────────────
   function initSupabase() {
@@ -67,7 +72,100 @@
     const igText = document.getElementById('contact-instagram-text');
     if (igText) igText.textContent = '@' + igHandle.replace(/^@/, '');
 
+    // Announcement banner
+    const ann = getSetting('site_announcement', '').trim();
+    const annEl = document.getElementById('site-announcement');
+    const annText = document.getElementById('announcement-text');
+    if (annEl && annText && ann && !localStorage.getItem(ANNOUNCEMENT_KEY)) {
+      annText.textContent = ann;
+      annEl.classList.remove('hidden');
+      document.body.classList.add('has-announcement');
+    } else if (annEl) {
+      annEl.classList.add('hidden');
+      document.body.classList.remove('has-announcement');
+    }
+
+    // Map embed
+    const mapQuery = getSetting('map_embed_query', '').trim();
+    const mapWrap = document.getElementById('map-wrap');
+    const mapEmbed = document.getElementById('map-embed');
+    if (mapQuery && mapWrap && mapEmbed) {
+      mapWrap.classList.remove('hidden');
+      mapEmbed.src = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=10&output=embed`;
+    } else if (mapWrap) {
+      mapWrap.classList.add('hidden');
+    }
+
+    // Footer
+    const footerCity = document.getElementById('footer-city');
+    if (footerCity) footerCity.textContent = city;
+    const footerWa = document.getElementById('footer-whatsapp');
+    const footerIg = document.getElementById('footer-instagram');
+    const footerPhone = document.getElementById('footer-phone');
+    if (footerWa) footerWa.href = 'https://wa.me/' + wa.replace(/\D/g, '');
+    if (footerIg) footerIg.href = igUrl;
+    if (footerPhone) footerPhone.href = 'tel:' + phone.replace(/\s/g, '');
+    const galleryIg = document.getElementById('gallery-instagram-link');
+    if (galleryIg) galleryIg.href = igUrl;
+
+    renderHoursTable();
+    updateTicker();
+    renderFeaturedSpecial();
     updateLiveStatus();
+  }
+
+  function renderHoursTable() {
+    const hours = parseBusinessHours();
+    const dayRows = [
+      ['monday', 'Monday'], ['tuesday', 'Tuesday'], ['wednesday', 'Wednesday'],
+      ['thursday', 'Thursday'], ['friday', 'Friday'], ['saturday', 'Saturday'], ['sunday', 'Sunday'],
+    ];
+    const fmtRow = (label, day) => {
+      if (!day || day.closed) {
+        const note = label === 'Monday' ? ' (fermenting)' : '';
+        return `<div class="flex justify-between gap-4"><span>${label}</span><span class="text-red-600 font-semibold">Closed${note}</span></div>`;
+      }
+      return `<div class="flex justify-between gap-4"><span>${label}</span><span class="font-semibold text-secondary">${fmtTime(day.open)} – ${fmtTime(day.close)}</span></div>`;
+    };
+    const html = dayRows.map(([k, label]) => fmtRow(label, hours[k])).join('');
+    const table = document.getElementById('hours-table');
+    const footerHours = document.getElementById('footer-hours');
+    if (table) table.innerHTML = html;
+    if (footerHours) {
+      footerHours.innerHTML = dayRows.map(([k, label]) => {
+        const day = hours[k];
+        const time = !day || day.closed ? 'Closed' : `${fmtTime(day.open)}–${fmtTime(day.close)}`;
+        return `<p>${label}: ${time}</p>`;
+      }).join('');
+    }
+  }
+
+  function updateTicker() {
+    try {
+      const msgs = JSON.parse(getSetting('ticker_messages', '[]'));
+      const track = document.querySelector('.ticker-track');
+      if (!track || !msgs.length) return;
+      const items = msgs.map((m) =>
+        `<span class="text-secondary-dark text-xs sm:text-sm font-semibold whitespace-nowrap px-8">${esc(m)}</span>`
+      ).join('');
+      track.innerHTML = items + items;
+    } catch { /* keep default ticker */ }
+  }
+
+  function renderFeaturedSpecial() {
+    const wrap = document.getElementById('featured-special');
+    if (!wrap || !menuItems.length) return;
+    const id = parseInt(getSetting('featured_menu_item_id', ''), 10);
+    const item = menuItems.find((m) => m.id === id);
+    if (!item) { wrap.classList.add('hidden'); return; }
+    wrap.classList.remove('hidden');
+    document.getElementById('featured-name').textContent = item.name;
+    document.getElementById('featured-desc').textContent = item.description || '';
+    document.getElementById('featured-price').textContent = '$' + Number(item.price).toFixed(2);
+    const btn = document.getElementById('featured-add-btn');
+    if (btn) {
+      btn.onclick = () => addToCart(item.id);
+    }
   }
 
   function parseDeliveryZipPrefixes() {
@@ -101,28 +199,59 @@
     setMenuLoading(false);
     if (error) { console.error('Menu load error:', error); showToast('Could not load menu', 'error'); return; }
     menuItems = data || [];
+    pruneCart();
     renderMenu();
+    renderFeaturedSpecial();
     renderCartMenuOptions();
+  }
+
+  function loadCartFromStorage() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || '[]');
+      cart = Array.isArray(saved) ? saved : [];
+    } catch { cart = []; }
+  }
+
+  function saveCartToStorage() {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+  }
+
+  function pruneCart() {
+    if (!menuItems.length) return;
+    cart = cart.filter((c) => menuItems.some((m) => m.id === c.id));
+    saveCartToStorage();
+    updateCartUI();
   }
 
   function setMenuLoading(loading) {
     const el = document.getElementById('menu-loading');
     const grid = document.getElementById('menu-container');
+    const noResults = document.getElementById('menu-no-results');
     if (el) el.classList.toggle('hidden', !loading);
     if (grid) grid.classList.toggle('hidden', loading);
+    if (noResults) noResults.classList.add('hidden');
   }
 
   const CATEGORY_LABELS = { main: 'Main Plates', side: 'Extra Sides', drink: 'Drinks' };
   const CATEGORY_ICONS = { main: 'fa-plate-wheat', side: 'fa-plus', drink: 'fa-glass-water' };
 
-  function renderMenu(filter = 'all') {
+  function renderMenu(filter = menuFilter) {
+    menuFilter = filter;
     const container = document.getElementById('menu-container');
+    const noResults = document.getElementById('menu-no-results');
     if (!container) return;
 
+    const q = menuSearch.trim().toLowerCase();
     const grouped = { main: [], side: [], drink: [] };
     menuItems.forEach((item) => {
-      if (filter === 'all' || item.category === filter) grouped[item.category]?.push(item);
+      if (filter !== 'all' && item.category !== filter) return;
+      if (q && !item.name.toLowerCase().includes(q) && !(item.description || '').toLowerCase().includes(q)) return;
+      grouped[item.category]?.push(item);
     });
+
+    const total = grouped.main.length + grouped.side.length + grouped.drink.length;
+    if (noResults) noResults.classList.toggle('hidden', total > 0 || !q);
+    container.classList.toggle('hidden', total === 0);
 
     let html = '';
     ['main', 'side', 'drink'].forEach((cat) => {
@@ -143,8 +272,9 @@
           ? (stock <= 10 ? `<span class="text-xs font-semibold text-orange-700 bg-orange-50 px-2 py-1 rounded-full">Only ${stock} left</span>` : '')
           : '';
         const outOfStock = stock !== null && stock <= 0;
+        const imgSrc = item.image_url || DEFAULT_MENU_IMAGE;
         html += `<article class="menu-card${featured} bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-primary/10 reveal menu-pop" style="animation-delay:${i * 0.07}s" data-id="${item.id}">
-          ${item.image_url ? `<img src="${esc(item.image_url)}" alt="" class="w-full h-36 object-cover rounded-xl mb-4" loading="lazy">` : ''}
+          <img src="${esc(imgSrc)}" alt="${esc(item.name)}" class="w-full h-36 object-cover rounded-xl mb-4" loading="lazy">
           <div class="flex justify-between items-start gap-3 mb-2">
             <h4 class="font-display text-lg font-bold text-secondary">${esc(item.name)}</h4>
             <span class="text-primary font-bold text-lg whitespace-nowrap">$${Number(item.price).toFixed(2)}</span>
@@ -193,6 +323,7 @@
     }
     if (existing) existing.quantity += qty;
     else cart.push({ id: item.id, name: item.name, price: Number(item.price), quantity: qty, category: item.category });
+    saveCartToStorage();
     updateCartUI(true);
     showToast(`${item.name} added to cart`, 'success');
     openCart();
@@ -210,6 +341,7 @@
 
   function removeFromCart(itemId) {
     cart = cart.filter((c) => c.id !== itemId);
+    saveCartToStorage();
     updateCartUI();
   }
 
@@ -222,7 +354,7 @@
       return;
     }
     if (qty <= 0) removeFromCart(itemId);
-    else { item.quantity = qty; updateCartUI(); }
+    else { item.quantity = qty; saveCartToStorage(); updateCartUI(); }
   }
 
   function getSubtotal() {
@@ -473,6 +605,7 @@
     }));
 
     cart = [];
+    saveCartToStorage();
     updateCartUI();
     document.getElementById('order-form').reset();
     toggleDeliveryFields();
@@ -682,6 +815,48 @@
     });
   }
 
+  function initMenuSearch() {
+    const input = document.getElementById('menu-search');
+    if (!input) return;
+    input.addEventListener('input', () => {
+      menuSearch = input.value;
+      renderMenu(menuFilter);
+    });
+  }
+
+  function initAnnouncement() {
+    document.getElementById('announcement-dismiss')?.addEventListener('click', () => {
+      localStorage.setItem(ANNOUNCEMENT_KEY, '1');
+      document.getElementById('site-announcement')?.classList.add('hidden');
+      document.body.classList.remove('has-announcement');
+    });
+  }
+
+  function initCateringForm() {
+    document.getElementById('catering-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('catering-name').value.trim();
+      const phone = document.getElementById('catering-phone').value.trim();
+      const date = document.getElementById('catering-date').value;
+      const guests = document.getElementById('catering-guests').value;
+      const details = document.getElementById('catering-details').value.trim();
+      const dateFmt = date ? new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : date;
+      let msg = `🍽️ *Catering Inquiry – Chef by Birth*\n\n`;
+      msg += `👤 ${name}\n📱 ${phone}\n📅 ${dateFmt}\n👥 ${guests} guests\n`;
+      if (details) msg += `\n${details}\n`;
+      msg += `\nPlease confirm availability and pricing. Thank you!`;
+      const waNum = getSetting('business_whatsapp', C.BUSINESS_WHATSAPP);
+      window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+      showToast('Opening WhatsApp for your catering inquiry…', 'success');
+    });
+    const dateInput = document.getElementById('catering-date');
+    if (dateInput) {
+      const min = new Date();
+      min.setDate(min.getDate() + 2);
+      dateInput.min = min.toISOString().slice(0, 10);
+    }
+  }
+
   function initMobileMenu() {
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
@@ -761,7 +936,7 @@
     const floatBtn = document.getElementById('floating-order-btn');
     const heroImg = document.querySelector('.hero-bg-image');
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const sections = ['about', 'kenkey', 'menu', 'how-it-works', 'reviews', 'hours', 'track-order', 'order', 'faq', 'contact'];
+    const sections = ['about', 'kenkey', 'menu', 'how-it-works', 'reviews', 'hours', 'gallery', 'catering', 'track-order', 'order', 'faq', 'contact'];
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let floatPulseDone = false;
 
@@ -799,9 +974,14 @@
 
   // ─── Boot ────────────────────────────────────────────────────────
   async function init() {
+    loadCartFromStorage();
+    updateCartUI();
     initMobileMenu();
     initCartToggle();
     initMenuFilters();
+    initMenuSearch();
+    initAnnouncement();
+    initCateringForm();
     initRevealObserver();
     initSmoothScroll();
     initScrollEffects();

@@ -64,6 +64,12 @@
     🎉 Your order is READY for pickup!
   </div>
 
+  <!-- Site announcement (settings-driven) -->
+  <div id="site-announcement" class="hidden fixed top-16 md:top-20 left-0 right-0 z-[45] bg-primary text-white text-center py-2.5 px-10 text-sm font-medium shadow-md">
+    <span id="announcement-text"></span>
+    <button type="button" id="announcement-dismiss" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-1" aria-label="Dismiss announcement"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
   <!-- Header -->
   <header id="site-header" class="fixed top-0 left-0 right-0 z-50 bg-secondary/90 backdrop-blur-md shadow-lg transition-all">
     <nav class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,7 +81,7 @@
         <ul class="hidden md:flex items-center gap-6" role="list">
           <li><a href="#about" class="nav-link text-white/90 text-sm font-medium" data-section="about">Our Story</a></li>
           <li><a href="#menu" class="nav-link text-white/90 text-sm font-medium" data-section="menu">Menu</a></li>
-          <li><a href="#kenkey" class="nav-link text-white/90 text-sm font-medium" data-section="kenkey">What is Kenkey?</a></li>
+          <li><a href="#catering" class="nav-link text-white/90 text-sm font-medium" data-section="catering">Catering</a></li>
           <li><a href="#order" class="nav-link text-white/90 text-sm font-medium" data-section="order">Order</a></li>
           <li><a href="#track-order" class="nav-link text-white/90 text-sm font-medium" data-section="track-order">Track</a></li>
           <li><a href="#faq" class="nav-link text-white/90 text-sm font-medium" data-section="faq">FAQ</a></li>
@@ -94,6 +100,8 @@
         <ul class="flex flex-col gap-1 pb-4">
           <li><a href="#about" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Our Story</a></li>
           <li><a href="#menu" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Menu</a></li>
+          <li><a href="#gallery" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Gallery</a></li>
+          <li><a href="#catering" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Catering</a></li>
           <li><a href="#kenkey" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">What is Kenkey?</a></li>
           <li><a href="#order" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Order</a></li>
           <li><a href="#track-order" class="block text-white/90 py-2 px-3 rounded-lg hover:bg-white/10">Track Order</a></li>
@@ -260,16 +268,44 @@
           <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mt-3 mb-4">Our Menu</h2>
           <p class="text-gray-600">Live menu — updates instantly when items sell out</p>
         </div>
+
+        <!-- Today's special (settings-driven) -->
+        <div id="featured-special" class="hidden reveal mb-8 max-w-2xl mx-auto">
+          <div class="featured-special-card bg-gradient-to-r from-secondary to-secondary-dark text-white rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-xl border border-accent/20">
+            <div class="text-5xl" aria-hidden="true">⭐</div>
+            <div class="flex-1 text-center sm:text-left">
+              <p class="text-accent text-xs font-bold uppercase tracking-widest mb-1">Today's Special</p>
+              <h3 id="featured-name" class="font-display text-xl sm:text-2xl font-bold"></h3>
+              <p id="featured-desc" class="text-white/80 text-sm mt-1"></p>
+              <p id="featured-price" class="text-accent font-bold text-lg mt-2"></p>
+            </div>
+            <button type="button" id="featured-add-btn" class="btn-primary bg-accent hover:bg-accent-dark text-secondary-dark font-bold px-6 py-3 rounded-full whitespace-nowrap">
+              <i class="fa-solid fa-cart-plus mr-1"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <div class="max-w-md mx-auto mb-6 reveal">
+          <label for="menu-search" class="sr-only">Search menu</label>
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="search" id="menu-search" placeholder="Search menu…" class="w-full pl-11 pr-4 py-3 rounded-full border border-gray-200 bg-white shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 text-sm">
+          </div>
+        </div>
+
         <div class="flex flex-wrap justify-center gap-2 mb-10 reveal" role="tablist">
           <button type="button" class="menu-filter-btn active px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="all">All</button>
           <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="main">Main Plates</button>
           <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="side">Extra Sides</button>
           <button type="button" class="menu-filter-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-white text-secondary border" data-filter="drink">Drinks</button>
         </div>
-        <div id="menu-loading" class="text-center py-16">
-          <i class="fa-solid fa-spinner fa-spin text-3xl text-primary mb-4"></i>
-          <p class="text-gray-500">Loading menu…</p>
+        <div id="menu-loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 py-8">
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52"></div>
+          <div class="menu-skeleton rounded-2xl h-52 hidden sm:block"></div>
         </div>
+        <p id="menu-no-results" class="hidden text-center text-gray-500 py-12">No items match your search.</p>
         <div id="menu-container" class="hidden"></div>
       </div>
     </section>
@@ -336,13 +372,80 @@
             <p id="location-city" class="font-semibold text-lg text-secondary">[CITY], PA</p>
             <p class="text-gray-600 mt-2 text-sm">Delivery within 20 miles · $5 fee or free over $40</p>
           </div>
-          <div class="reveal reveal-right bg-cream rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow text-sm space-y-2">
-            <div class="flex justify-between"><span>Mon</span><span class="text-red-600 font-semibold">Closed (fermenting)</span></div>
-            <div class="flex justify-between"><span>Tue–Thu</span><span class="font-semibold text-secondary">12pm – 7pm</span></div>
-            <div class="flex justify-between"><span>Fri–Sat</span><span class="font-semibold text-secondary">12pm – 8pm</span></div>
-            <div class="flex justify-between"><span>Sun</span><span class="font-semibold text-secondary">1pm – 5pm</span></div>
+          <div class="reveal reveal-right bg-cream rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow text-sm">
+            <div id="hours-table" class="space-y-2"></div>
           </div>
         </div>
+        <div id="map-wrap" class="hidden reveal mt-8 rounded-2xl overflow-hidden shadow-lg border border-gray-100 h-64 sm:h-80">
+          <iframe id="map-embed" title="Chef by Birth location map" class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-20 md:py-28 bg-white">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 reveal">
+          <span class="text-primary font-semibold uppercase text-sm tracking-wider">From Our Kitchen</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl text-secondary mt-3 mb-4">Food Gallery</h2>
+          <p class="text-gray-600">Authentic Ghanaian flavors, made fresh every day</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div class="gallery-item reveal col-span-2 row-span-2 rounded-2xl overflow-hidden shadow-md">
+            <img src="assets/hero-kenkey.png" alt="Traditional Ghanaian kenkey" class="w-full h-full object-cover min-h-[200px] md:min-h-[320px] hover:scale-105 transition-transform duration-500" loading="lazy">
+          </div>
+          <div class="gallery-item reveal gallery-placeholder rounded-2xl bg-cream flex flex-col items-center justify-center p-6 text-center min-h-[140px] border border-primary/10">
+            <span class="text-3xl mb-2">🐟</span><p class="text-sm font-semibold text-secondary">Crispy Fried Fish</p>
+          </div>
+          <div class="gallery-item reveal gallery-placeholder rounded-2xl bg-cream flex flex-col items-center justify-center p-6 text-center min-h-[140px] border border-primary/10">
+            <span class="text-3xl mb-2">🔥</span><p class="text-sm font-semibold text-secondary">Homemade Shito</p>
+          </div>
+          <div class="gallery-item reveal gallery-placeholder rounded-2xl bg-cream flex flex-col items-center justify-center p-6 text-center min-h-[140px] border border-primary/10">
+            <span class="text-3xl mb-2">🌽</span><p class="text-sm font-semibold text-secondary">3-Day Fermented Kenkey</p>
+          </div>
+          <div class="gallery-item reveal gallery-placeholder rounded-2xl bg-cream flex flex-col items-center justify-center p-6 text-center min-h-[140px] border border-primary/10">
+            <span class="text-3xl mb-2">🍹</span><p class="text-sm font-semibold text-secondary">Sobolo &amp; Asana</p>
+          </div>
+        </div>
+        <p class="text-center mt-8 text-sm text-gray-500 reveal">Follow <a id="gallery-instagram-link" href="https://instagram.com/chefbybirth" target="_blank" rel="noopener" class="text-primary font-semibold hover:underline">@chefbybirth</a> for daily food photos</p>
+      </div>
+    </section>
+
+    <!-- Catering -->
+    <section id="catering" class="py-20 md:py-28 bg-secondary text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10 reveal">
+          <span class="text-accent font-semibold uppercase text-sm tracking-wider">Events &amp; Parties</span>
+          <h2 class="font-display font-bold text-3xl sm:text-4xl mt-3 mb-4">Catering &amp; Large Orders</h2>
+          <p class="text-white/80 max-w-2xl mx-auto">Planning a family gathering, church event, or office lunch? We cater authentic Ghanaian kenkey for groups of 10+. 24–48 hours notice required.</p>
+        </div>
+        <form id="catering-form" class="reveal bg-white/10 backdrop-blur rounded-2xl p-6 sm:p-8 border border-white/20 space-y-4">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="catering-name" class="block text-sm font-semibold mb-1">Your Name *</label>
+              <input type="text" id="catering-name" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-accent focus:ring-2 focus:ring-accent/20">
+            </div>
+            <div>
+              <label for="catering-phone" class="block text-sm font-semibold mb-1">Phone *</label>
+              <input type="tel" id="catering-phone" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-accent focus:ring-2 focus:ring-accent/20">
+            </div>
+            <div>
+              <label for="catering-date" class="block text-sm font-semibold mb-1">Event Date *</label>
+              <input type="date" id="catering-date" required class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:border-accent focus:ring-2 focus:ring-accent/20">
+            </div>
+            <div>
+              <label for="catering-guests" class="block text-sm font-semibold mb-1">Estimated Guests *</label>
+              <input type="number" id="catering-guests" min="10" required placeholder="10+" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-accent focus:ring-2 focus:ring-accent/20">
+            </div>
+          </div>
+          <div>
+            <label for="catering-details" class="block text-sm font-semibold mb-1">Event Details</label>
+            <textarea id="catering-details" rows="3" placeholder="Pickup or delivery, menu preferences, dietary needs…" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/50 focus:border-accent focus:ring-2 focus:ring-accent/20"></textarea>
+          </div>
+          <button type="submit" class="btn-primary w-full sm:w-auto bg-accent hover:bg-accent-dark text-secondary-dark font-bold px-8 py-3.5 rounded-full inline-flex items-center justify-center gap-2">
+            <i class="fa-brands fa-whatsapp text-xl"></i> Send Catering Inquiry via WhatsApp
+          </button>
+        </form>
       </div>
     </section>
 
@@ -528,9 +631,42 @@
     </section>
   </main>
 
-  <footer class="bg-secondary-dark text-white/70 py-8 text-center text-sm">
-    <p>&copy; 2025 Chef by Birth – Authentic Ghanaian Food in Pennsylvania</p>
-    <p class="mt-2"><a href="/admin" class="text-white/40 hover:text-accent text-xs">Admin</a></p>
+  <footer class="bg-secondary-dark text-white/70">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        <div>
+          <p class="font-display font-bold text-white text-lg mb-3"><i class="fa-solid fa-bowl-food text-accent mr-2"></i>Chef by Birth</p>
+          <p class="text-sm leading-relaxed">Authentic Ghanaian kenkey — fermented with tradition, served with love in Pennsylvania.</p>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-3">Quick Links</p>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#menu" class="hover:text-accent transition-colors">Menu</a></li>
+            <li><a href="#order" class="hover:text-accent transition-colors">Order Online</a></li>
+            <li><a href="#gallery" class="hover:text-accent transition-colors">Gallery</a></li>
+            <li><a href="#catering" class="hover:text-accent transition-colors">Catering</a></li>
+            <li><a href="#faq" class="hover:text-accent transition-colors">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-3">Hours</p>
+          <div id="footer-hours" class="text-sm space-y-1"></div>
+        </div>
+        <div>
+          <p class="font-semibold text-white mb-3">Connect</p>
+          <div class="flex gap-3 mb-3">
+            <a id="footer-whatsapp" href="#" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#25D366] transition-colors" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+            <a id="footer-instagram" href="#" target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a id="footer-phone" href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent hover:text-secondary-dark transition-colors" aria-label="Phone"><i class="fa-solid fa-phone"></i></a>
+          </div>
+          <p id="footer-city" class="text-sm"></p>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
+        <p>&copy; 2025 Chef by Birth – Authentic Ghanaian Food in Pennsylvania</p>
+        <a href="/admin" class="text-white/40 hover:text-accent">Admin</a>
+      </div>
+    </div>
   </footer>
 
   <a href="#order" id="floating-order-btn" class="floating-btn hidden-scroll fixed bottom-6 right-6 z-40 bg-accent text-secondary-dark font-bold px-5 py-3.5 rounded-full shadow-lg flex items-center gap-2">

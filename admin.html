@@ -206,6 +206,23 @@
                 <label class="block text-sm font-semibold mb-1">Instagram URL</label>
                 <input type="url" id="settings-instagram" class="w-full px-4 py-3 rounded-xl border border-gray-300">
               </div>
+              <div class="sm:col-span-2">
+                <label class="block text-sm font-semibold mb-1">Site Announcement</label>
+                <input type="text" id="settings-announcement" placeholder="Leave blank to hide banner" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Featured Menu Item ID</label>
+                <input type="number" id="settings-featured-id" placeholder="1" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+                <p class="text-xs text-gray-400 mt-1">Menu item ID for Today's Special</p>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold mb-1">Map Location Query</label>
+                <input type="text" id="settings-map-query" placeholder="Philadelphia, PA" class="w-full px-4 py-3 rounded-xl border border-gray-300">
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-sm font-semibold mb-1">Ticker Messages (JSON array)</label>
+                <input type="text" id="settings-ticker" placeholder='["Message 1","Message 2"]' class="w-full px-4 py-3 rounded-xl border border-gray-300 font-mono text-xs">
+              </div>
             </div>
             <button type="submit" class="bg-secondary hover:bg-secondary-dark text-white font-semibold px-6 py-3 rounded-xl transition-colors">Save Settings</button>
           </form>

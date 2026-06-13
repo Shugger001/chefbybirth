@@ -339,6 +339,10 @@
     document.getElementById('settings-city').value = settings.business_city || '';
     document.getElementById('settings-delivery-zips').value = settings.delivery_zip_prefixes || '[]';
     document.getElementById('settings-instagram').value = settings.instagram_url || '';
+    document.getElementById('settings-announcement').value = settings.site_announcement || '';
+    document.getElementById('settings-featured-id').value = settings.featured_menu_item_id || '';
+    document.getElementById('settings-map-query').value = settings.map_embed_query || '';
+    document.getElementById('settings-ticker').value = settings.ticker_messages || '[]';
   }
 
   async function saveSettings(e) {
@@ -354,6 +358,10 @@
       { key: 'business_city', value: document.getElementById('settings-city').value },
       { key: 'delivery_zip_prefixes', value: document.getElementById('settings-delivery-zips').value },
       { key: 'instagram_url', value: document.getElementById('settings-instagram').value },
+      { key: 'site_announcement', value: document.getElementById('settings-announcement').value },
+      { key: 'featured_menu_item_id', value: document.getElementById('settings-featured-id').value },
+      { key: 'map_embed_query', value: document.getElementById('settings-map-query').value },
+      { key: 'ticker_messages', value: document.getElementById('settings-ticker').value },
     ];
 
     for (const u of updates) {

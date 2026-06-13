@@ -40,6 +40,8 @@ Chefbybirth/
 
 **Already ran schema.sql?** Run `schema-migration.sql` instead to add spice level, delivery ZIPs, and updated RPCs without resetting data.
 
+Then run `schema-migration-v2.sql` for announcement banner, featured special, map, and ticker settings.
+
 ---
 
 ## Step 3: Create Admin User

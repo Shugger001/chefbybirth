@@ -359,7 +359,11 @@ INSERT INTO settings (key, value) VALUES
   ('delivery_zip_prefixes', '["190","191","193","194","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","195","196"]'),
   ('instagram_handle', 'chefbybirth'),
   ('instagram_url', 'https://instagram.com/chefbybirth'),
-  ('site_url', 'https://chefbybirth.vercel.app')
+  ('site_url', 'https://chefbybirth.vercel.app'),
+  ('site_announcement', '🎉 Welcome! Free shito with every main plate this week.'),
+  ('featured_menu_item_id', '1'),
+  ('map_embed_query', 'Pennsylvania, USA'),
+  ('ticker_messages', '["🔥 Fresh kenkey fermented 3 days","🚚 Free delivery on orders over $40","🌶️ Homemade shito — family recipe"]')
 ON CONFLICT (key) DO NOTHING;
 
 -- =============================================================================

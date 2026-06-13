@@ -320,3 +320,30 @@ input:focus, textarea:focus, select:focus {
 .review-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(45, 106, 79, 0.12); }
 .kenkey-fact { transition: transform 0.3s ease; }
 .kenkey-fact:hover { transform: translateY(-4px); }
+
+/* ── Menu skeleton ── */
+.menu-skeleton {
+  background: linear-gradient(90deg, #f0ede0 25%, #faf8f0 50%, #f0ede0 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Featured special ── */
+.featured-special-card { transition: box-shadow 0.3s ease; }
+.featured-special-card:hover { box-shadow: 0 16px 40px rgba(45, 106, 79, 0.25); }
+
+/* ── Gallery ── */
+.gallery-item { overflow: hidden; }
+.gallery-placeholder { transition: background-color 0.3s ease, border-color 0.3s ease; }
+.gallery-placeholder:hover { background-color: #fff; border-color: rgba(217, 122, 43, 0.3); }
+
+/* ── Announcement banner offset ── */
+body.has-announcement .ticker-wrap { top: calc(4rem + 2.5rem); }
+@media (min-width: 768px) {
+  body.has-announcement .ticker-wrap { top: calc(5rem + 2.5rem); }
+}
+body.has-announcement main { padding-top: 2.5rem; }
